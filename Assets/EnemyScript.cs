@@ -12,7 +12,6 @@ public class EnemyScript : MonoBehaviour
     public Vector3 lastKnownLocation;
     public bool canSeePlayer;
     public float movingCooldown = 0f;
-    public float activationLevel = 0f;
     public float speed = 10;
     private GameObject player;
 
@@ -26,7 +25,7 @@ public class EnemyScript : MonoBehaviour
     {
         movingCooldown -= Time.deltaTime;
         float distanceFromPlayer = Vector3.Distance(player.transform.position, transform.position);
-        canSeePlayer = distanceFromPlayer <= 8f;
+        canSeePlayer = distanceFromPlayer <= 5f;
 
         if (canSeePlayer)
         {

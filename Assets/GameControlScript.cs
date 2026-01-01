@@ -10,6 +10,7 @@ public class GameControlScript : MonoBehaviour
     void Start()
     {
         StartCoroutine(DayNightCycle());
+        GameObject clone = Instantiate(enemyPrefab, new Vector3(0,0,1), Quaternion.identity);
     }
 
     void Update()
@@ -29,6 +30,7 @@ public class GameControlScript : MonoBehaviour
 
     IEnumerator SpawnZombies()
     {
+        
         yield return new WaitForSeconds(1f);
     }
 }
