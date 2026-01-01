@@ -2,12 +2,14 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using TMPro;
+using Microsoft.Unity.VisualStudio.Editor;
 
 
 public class InventoryScript : MonoBehaviour
 {
     public GameObject gameCanvas;
     public TMP_Text materialText, coinsText;
+    //list of inventory images:
     public GameObject image;
     public List<string> inventory = new List<string>();
     public GameObject player;
@@ -54,17 +56,31 @@ public class InventoryScript : MonoBehaviour
         materialText.text = "Materials: " + materials + "\nCoins: " + coins;
         
     }
+
+
     public void UpdateInventory()
     {
-        
-        foreach(Transform img in gameCanvas.transform) Destroy(img.gameObject);
+        foreach (Transform img in gameCanvas.transform)
+            Destroy(img.gameObject);
 
-        for(int i = 0; i < inventory.Count; i++)
+        for (int i = 0; i < inventory.Count; i++)
         {
-            Vector3 position = new Vector3(0,0,1).normalized;
-            GameObject item = Instantiate(image, position, Quaternion.identity);
+            GameObject item = Instantiate(image);
             item.transform.SetParent(gameCanvas.transform, false);
-            item.name = "Image" + (i + 1);
+
+            UnityEngine.UI.Image imgcomp =
+                item.GetComponent<UnityEngine.UI.Image>();
+
+            Sprite spriteimg = Resources.Load<Sprite>("Images/" + inventory[i]);
+
+            if (spriteimg == null)
+            {
+                Debug.LogError("Missing sprite: " + inventory[i]);
+                Destroy(item);
+                continue;
+            }
+
+            imgcomp.sprite = spriteimg;
         }
     }
 

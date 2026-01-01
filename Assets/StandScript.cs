@@ -154,4 +154,12 @@ public class StandScript : MonoBehaviour
         yield return null;
         EventSystem.current.SetSelectedGameObject(null);
     }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.name.Contains("Tile"))
+        {
+            Destroy(collision.gameObject);
+        }
+    }
 }

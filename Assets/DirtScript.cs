@@ -2,14 +2,16 @@ using UnityEngine;
 
 public class DirtScript : MonoBehaviour
 {
+    //8E3F00
     public bool isFull = false;
+    public bool isGrown = false;
     public string currentPlant = "";
     public float growth = 0;
-    private float growthStop = 70f;
+    private float growthStop = 35f;
 
     private Transform plantChild;
+    private SpriteRenderer spriteRenderer;
     private float baseY;
-
     void Update()
     {
         if (!isFull || plantChild == null)
@@ -20,8 +22,19 @@ public class DirtScript : MonoBehaviour
 
     void GrowPlant()
     {
+        spriteRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
+
         if (growth >= growthStop)
+        {
+            spriteRenderer.color = Color.white;
+            isGrown = true;
             return;
+        }
+        else
+        {
+            spriteRenderer.color = Color.green;
+            isGrown = false;
+        }
 
         float growAmount = 0.001f;
 
@@ -55,7 +68,7 @@ public class DirtScript : MonoBehaviour
 
         plantChild.localScale = new Vector3(0.3f, 0f, 1f);
 
-        plantChild.position += new Vector3(0f, -0.35f, 0f);
+        plantChild.position += new Vector3(0f, -0.05f, 0f);
 
         baseY = plantChild.position.y;
 

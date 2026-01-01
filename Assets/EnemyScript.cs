@@ -1,8 +1,4 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 
 public class EnemyScript : MonoBehaviour
 {
@@ -42,23 +38,28 @@ public class EnemyScript : MonoBehaviour
     }
     void Actions(int action)
     {
+        Vector3 direction = Vector3.zero;
         switch(action)
         {
-            case 0: //walking to player
-                transform.LookAt(player.transform.position);
-                transform.Translate(Vector3.forward * speed * Time.deltaTime);
+            case 0: 
+                direction = player.transform.position - transform.position;
                 break;
-            
-            case 1: //patroling
-                transform.LookAt(lastKnownLocation);
-                transform.Translate(Vector3.forward * speed * Time.deltaTime);
+
+            case 1: 
+                direction = lastKnownLocation - transform.position;
                 break;
         }
+
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+
+        transform.position += direction.normalized * speed * Time.deltaTime;
     }
+
     Vector3 FindRandomPos()
     {
         Vector3 pos = new Vector2(
-            Random.Range(-10, 10), 
+            Random.Range(-10, 10),
             Random.Range(-10, 10)
         );
         return transform.position + pos;
