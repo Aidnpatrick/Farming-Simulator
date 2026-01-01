@@ -1,0 +1,26 @@
+
+using UnityEngine;
+
+public class TileGeneratorScript : MonoBehaviour
+{
+    public GameObject tilePrefab;
+
+    
+    void Start()
+    {
+        for(int i = 0; i < 5; i++)
+        {
+            for(int j = 0; j < 5; j++)
+            {
+                Vector2 pos = new Vector2(i,j);
+                GameObject tile = Instantiate(tilePrefab, pos, Quaternion.identity);
+                tile.name = "Tile";
+            }
+        }
+    }
+
+    void Update()
+    {
+
+    }
+}
