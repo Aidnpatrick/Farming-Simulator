@@ -75,12 +75,12 @@ public class InventoryScript : MonoBehaviour
 
             if (spriteimg == null)
             {
-                Debug.LogError("Missing sprite: " + inventory[i]);
-                Destroy(item);
                 continue;
             }
-
-            imgcomp.sprite = spriteimg;
+            else
+            {
+                imgcomp.sprite = spriteimg;
+            }
         }
     }
 

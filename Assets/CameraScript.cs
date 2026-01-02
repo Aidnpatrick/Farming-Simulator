@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
+using NUnit.Framework;
 
 public class CameraScript : MonoBehaviour
 {
@@ -113,14 +114,31 @@ public class CameraScript : MonoBehaviour
                 if (child.name.Contains("Dirt") && child.childCount > 0)
                 {
                     Destroy(child.GetChild(0).gameObject);
-                    child.GetComponent<DirtScript>().isFull = false;
+                    DirtScript ds = child.GetComponent<DirtScript>();
+                    ds.isFull = false;
                     invScript.materials++;
+                    //Transform grandChild = child.GetChild(0);
+                    if(ds.isGrown)
+                    {
+                        invScript.coins+=5;
+                    }
                     return;
                 }
 
                 Destroy(child.gameObject);
                 tileScript.isFull = false;
                 invScript.materials++;
+            }
+        }
+        if(Input.GetMouseButtonDown(0))
+        {
+            if(hit.collider.name.Contains("Fence"))
+            {
+                Transform parent = hit.collider.transform.parent;
+                TileScript ts = parent.GetComponent<TileScript>();
+                ts.isFull = false;
+                invScript.materials++;
+                Destroy(hit.collider.gameObject);
             }
         }
 

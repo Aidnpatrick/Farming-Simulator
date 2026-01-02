@@ -19,11 +19,10 @@ public class DirtScript : MonoBehaviour
 
         GrowPlant();
     }
-
     void GrowPlant()
     {
         spriteRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
-
+        
         if (growth >= growthStop)
         {
             spriteRenderer.color = Color.white;
