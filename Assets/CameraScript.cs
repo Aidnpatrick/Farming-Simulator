@@ -83,13 +83,13 @@ public class CameraScript : MonoBehaviour
                 if (invScript.materials > 0 && !tileScript.isFull)
                 {
                     if (currentItem == "FencePlacer")
-                        Build(hit.collider.gameObject, fencePrefab, hit.collider.transform.position);
+                        Build(hit.collider.gameObject, fencePrefab, new Vector3(0,0,1), false);
 
                     if (currentItem == "ChestPlacer")
-                        Build(hit.collider.gameObject, chestPrefab, hit.collider.transform.position);
+                        Build(hit.collider.gameObject, chestPrefab, new Vector3(0,0,1), false);
 
                     if (currentItem == "Hoe")
-                        Build(hit.collider.gameObject, dirtPrefab, hit.collider.transform.position);
+                        Build(hit.collider.gameObject, dirtPrefab, new Vector3(0,0,1), false);
                 }
 
                 if (hit.collider.transform.childCount > 0)
@@ -100,7 +100,7 @@ public class CameraScript : MonoBehaviour
 
                     if (currentItem.Contains("Seed") && child.name.Contains("Dirt") && !ds.isFull)
                     {
-                        Build(child.gameObject, plantPrefab, hit.collider.transform.position);
+                        Build(child.gameObject, plantPrefab, new Vector3(0,0,1), false);
                         ds.isFull = true;
                         ds.NewPlant();
                     }
@@ -132,12 +132,14 @@ public class CameraScript : MonoBehaviour
         }
         if(Input.GetMouseButtonDown(0))
         {
-            if(hit.collider.name.Contains("Fence"))
+            if(hit.collider.name.Contains("Fence") || hit.collider.name.Contains("Weed") || hit.collider.name.Contains("Tree"))
             {
+                
                 Transform parent = hit.collider.transform.parent;
                 TileScript ts = parent.GetComponent<TileScript>();
                 ts.isFull = false;
-                invScript.materials++;
+                if(hit.collider.name.Contains("Fence"))
+                    invScript.materials++;
                 Destroy(hit.collider.gameObject);
             }
         }
@@ -163,15 +165,22 @@ public class CameraScript : MonoBehaviour
         }
     }
 
-    void Build(GameObject parent, GameObject prefab, Vector3 position)
+    public void Build(GameObject parent, GameObject prefab, Vector3 position, bool isNatural, string[] sprites = null)
     {
         if (parent.name.Contains("Tile"))
             parent.GetComponent<TileScript>().isFull = true;
 
         GameObject obj = Instantiate(prefab, position, Quaternion.identity);
-        obj.transform.SetParent(parent.transform);
+        obj.transform.SetParent(parent.transform, false);
+        obj.transform.localPosition = position;
         obj.name = prefab.name + "Clone";
-
-        invScript.materials--;
+        if(sprites != null)
+        {
+            SpriteRenderer objSprite = obj.GetComponent<SpriteRenderer>();
+            Sprite spriteimg = Resources.Load<Sprite>("Images/" + sprites[Random.Range(0, sprites.Length)]);
+            objSprite.sprite = spriteimg;
+        }
+        if(!isNatural)
+            invScript.materials--;
     }
 }

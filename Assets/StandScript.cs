@@ -41,6 +41,7 @@ public class StandScript : MonoBehaviour
         items.Add(new Item("ChestPlacer", 3, "Lets you store multiple items easily."));
         items.Add(new Item("Seeds", 2, "Place seeds into the dirt and sell the plant for profit."));
         items.Add(new Item("Materials", 2, "For the currency for placing and building things."));
+        items.Add(new Item("TakeDown", 20, "Its a light rifle that is good for hunting."));
         UploadShop();
 
         standGUI.SetActive(false);
@@ -55,15 +56,22 @@ public class StandScript : MonoBehaviour
 
         if (keyboard.digit1Key.wasPressedThisFrame)
             BuyItem(0);
-
         if (keyboard.digit2Key.wasPressedThisFrame)
             BuyItem(1);
-
         if (keyboard.digit3Key.wasPressedThisFrame)
             BuyItem(2);
-
         if (keyboard.digit4Key.wasPressedThisFrame)
             BuyItem(3);
+        if (keyboard.digit5Key.wasPressedThisFrame)
+            BuyItem(4);
+        if (keyboard.digit6Key.wasPressedThisFrame)
+            BuyItem(5);
+        if (keyboard.digit7Key.wasPressedThisFrame)
+            BuyItem(6);
+        if (keyboard.digit8Key.wasPressedThisFrame)
+            BuyItem(7);
+        if (keyboard.digit9Key.wasPressedThisFrame)
+            BuyItem(8);
     }
 
     public void SetActive(bool value)
@@ -124,7 +132,7 @@ public class StandScript : MonoBehaviour
         StartCoroutine(ClearSelectionNextFrame());
         foreach (Transform child in standGUI.transform)
             Destroy(child.gameObject);
-
+        int index = 1;
         foreach (Item item in items)
         {
             GameObject clone = Instantiate(imgGUI, standGUI.transform, false);
@@ -136,19 +144,24 @@ public class StandScript : MonoBehaviour
             buyButton.onClick.RemoveAllListeners();
 
             Item capturedItem = item;
-            buyButton.onClick.AddListener(() => Clicked(capturedItem));
-
+            buyButton.name = "Button (" + index + ")";
             buyButton.navigation = new Navigation { mode = Navigation.Mode.None };
             EventSystem.current.SetSelectedGameObject(null);
+            index++;
         }
         EventSystem.current.SetSelectedGameObject(null);
     }
+    public void UploadEbay()
+    {
+        
+    }
 
-    public void Clicked(Item item)
+    /*public void Clicked(Item item)
     {
         Debug.Log("Clicked " + item.name);
         GetItem(item.name, item.price);
     }
+    */
     IEnumerator ClearSelectionNextFrame()
     {
         yield return null;

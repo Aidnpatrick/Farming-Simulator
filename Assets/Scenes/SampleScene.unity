@@ -737,7 +737,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 100
+  m_SortingOrder: 1000
   m_TargetDisplay: 0
 --- !u!224 &457792253
 RectTransform:
@@ -2254,7 +2254,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   time: 0
   isDay: 1
+  cameraScript: {fileID: 0}
   enemyPrefab: {fileID: 7346980193422537679, guid: 62686054eef063f4a8bcd58d4dc69941, type: 3}
+  weedPrefab: {fileID: 1525680402692737059, guid: 6e6d028025152d34c81bcd0b963da769, type: 3}
+  treePrefab: {fileID: 6829938794046421993, guid: 47454973657a1b94492b7b2d7f42cdf9, type: 3}
 --- !u!4 &2120386292
 Transform:
   m_ObjectHideFlags: 0

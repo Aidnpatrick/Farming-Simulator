@@ -4,13 +4,12 @@ using UnityEngine;
 public class TileScript : MonoBehaviour
 {
     public bool isFull = false;
-    public string childName = "";
-    public string grandChildName = "";
-    /*void Update()
-    {
-        Transform child = transform.GetChild(0);
-        childName = child.name != null ? child.name : "";
 
-        grandChildName = child.GetChild(0) != null ? child.GetChild(0).name : "";
-    }*/
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.name == "Bullet" && isFull == true)
+        {
+            Destroy(collision.gameObject);
+        }
+    }
 }
