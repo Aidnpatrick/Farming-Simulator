@@ -14,7 +14,7 @@ public class InventoryScript : MonoBehaviour
     public List<string> inventory = new List<string>();
     public GameObject player;
     public int equippedItem = 1;
-    public int ammo = 10;
+    public int ammo = 10000000;
     public int materials = 1000;
     public int coins = 1000;
     private int maxInventorySize = 5;

@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 792f5bc5f90f87f44ab7666af830603c
+guid: 33f315a7c12275f4799dc751f457e074
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3959410596255820700
-    second: Weed_0
-  - first:
-      213: 5841368400047897033
-    second: Weed_1
+      213: 6019453725058403666
+    second: Zombie_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -54,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 600
+  spritePixelsToUnits: 200
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -116,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Weed_0
+      name: Zombie_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 577
-        height: 503
+        x: 635
+        y: 209
+        width: 256
+        height: 269
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -131,30 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 46411426a095d09c0800000000000000
-      internalID: -3959410596255820700
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Weed_1
-      rect:
-        serializedVersion: 2
-        x: 558
-        y: 3
-        width: 27
-        height: 82
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9c9fb076c95b01150800000000000000
-      internalID: 5841368400047897033
+      spriteID: 25d02004545698350800000000000000
+      internalID: 6019453725058403666
       vertices: []
       indices: 
       edges: []
@@ -173,8 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Weed_0: -3959410596255820700
-      Weed_1: 5841368400047897033
+      Zombie_0: 6019453725058403666
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

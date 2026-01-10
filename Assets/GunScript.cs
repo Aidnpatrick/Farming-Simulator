@@ -3,24 +3,29 @@ using UnityEngine.InputSystem;
 
 public class GunScript : MonoBehaviour
 {
-    public int ammo = 10;
     public GameObject bulletsPrefab;
+    private InventoryScript invScript;
     private float bulletSpeed = 20f;
-    private float r = 1f;
+    public float r = 1f;
+    public float coolDown;
+    void Start()
+    {
+        invScript = GameObject.Find("Inventory").GetComponent<InventoryScript>();
+    }
     void Update()
     {
-        r-= 0.35f;
+        r-= 0.75f;
         if(r < 0) r = 0;
-
+        coolDown = Mathf.Clamp(coolDown - Time.deltaTime, 0, 10);
         Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         mouseWorldPos.z = 0f;
 
         Vector3 direction = mouseWorldPos - transform.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
-        if (Input.GetMouseButtonDown(0) && ammo > 0)
+        if (Input.GetMouseButtonDown(0) && invScript.ammo > 0 && coolDown <= 0)
         {
-            ammo--;
+            invScript.ammo--;
 
             Transform barrel = transform.GetChild(0);
             GameObject bp = Instantiate(bulletsPrefab, barrel.position, transform.rotation);
@@ -31,9 +36,9 @@ public class GunScript : MonoBehaviour
             {
                 rb.linearVelocity = bp.transform.right * bulletSpeed;
             }
-
-            r += 10;
+            r = Mathf.Clamp(r + 25, 0, 55);
             Destroy(bp, 2f);
+            coolDown = 0.5f;
         }
     }
 }

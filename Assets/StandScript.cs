@@ -138,17 +138,21 @@ public class StandScript : MonoBehaviour
             GameObject clone = Instantiate(imgGUI, standGUI.transform, false);
 
             clone.transform.GetChild(0).GetComponent<TMP_Text>().text = item.name;
-            clone.transform.GetChild(1).GetComponent<TMP_Text>().text = item.price.ToString();
 
-            Button buyButton = clone.transform.GetChild(2).GetComponent<Button>();
+            Image img = clone.transform.GetChild(1).GetComponent<Image>();
+            img.sprite = Resources.Load<Sprite>("Images/" + item.name);
+
+            clone.transform.GetChild(2).GetComponent<TMP_Text>().text = item.price.ToString();
+
+            Button buyButton = clone.GetComponentInChildren<Button>();
             buyButton.onClick.RemoveAllListeners();
 
             Item capturedItem = item;
-            buyButton.name = "Button (" + index + ")";
+            buyButton.onClick.AddListener(() => BuyItem(capturedItem.price));
+
             buyButton.navigation = new Navigation { mode = Navigation.Mode.None };
-            EventSystem.current.SetSelectedGameObject(null);
-            index++;
         }
+
         EventSystem.current.SetSelectedGameObject(null);
     }
     public void UploadEbay()

@@ -165,7 +165,7 @@ public class CameraScript : MonoBehaviour
         }
     }
 
-    public void Build(GameObject parent, GameObject prefab, Vector3 position, bool isNatural, string[] sprites = null)
+    public GameObject Build(GameObject parent, GameObject prefab, Vector3 position, bool isNatural, string[] sprites = null)
     {
         if (parent.name.Contains("Tile"))
             parent.GetComponent<TileScript>().isFull = true;
@@ -180,7 +180,11 @@ public class CameraScript : MonoBehaviour
             Sprite spriteimg = Resources.Load<Sprite>("Images/" + sprites[Random.Range(0, sprites.Length)]);
             objSprite.sprite = spriteimg;
         }
+        
         if(!isNatural)
             invScript.materials--;
+
+
+        return obj;
     }
 }

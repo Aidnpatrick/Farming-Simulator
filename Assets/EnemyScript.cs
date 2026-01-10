@@ -9,6 +9,7 @@ public class EnemyScript : MonoBehaviour
     public bool canSeePlayer;
     public float movingCooldown = 0f;
     public float speed = 10;
+    public float health = 100;
     private GameObject player;
 
 
@@ -56,7 +57,7 @@ public class EnemyScript : MonoBehaviour
         transform.position += direction.normalized * speed * Time.deltaTime;
     }
 
-    Vector3 FindRandomPos()
+    public Vector3 FindRandomPos()
     {
         Vector3 pos = new Vector2(
             Random.Range(-10, 10),
@@ -70,6 +71,16 @@ public class EnemyScript : MonoBehaviour
         {
             PlayerScript ps = collision.GetComponent<PlayerScript>();
             ps.health -= 10;
+            
+        }
+        if(collision.name.Contains("Bullet"))
+        {
+            health -=20;
+            Destroy(collision.gameObject);
+            if(health <= 0)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

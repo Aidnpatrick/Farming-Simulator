@@ -185,8 +185,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -241,7 +241,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: -79.44646, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -1727,7 +1727,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6509434, g: 0.4386793, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1962,7 +1962,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.8190638, b: 0.4575472, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2004,13 +2004,13 @@ MonoBehaviour:
     m_Right: 5
     m_Top: 5
     m_Bottom: 5
-  m_ChildAlignment: 0
+  m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 100, y: 100}
+  m_CellSize: {x: 200, y: 200}
   m_Spacing: {x: 10, y: 10}
-  m_Constraint: 2
-  m_ConstraintCount: 3
+  m_Constraint: 0
+  m_ConstraintCount: 30
 --- !u!114 &1903493689
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2067,7 +2067,7 @@ MonoBehaviour:
   inventory: []
   player: {fileID: 1523223327}
   equippedItem: 1
-  ammo: 10
+  ammo: 10000
   materials: 1000
   coins: 100
 --- !u!4 &2043065834
@@ -2258,6 +2258,8 @@ MonoBehaviour:
   enemyPrefab: {fileID: 7346980193422537679, guid: 62686054eef063f4a8bcd58d4dc69941, type: 3}
   weedPrefab: {fileID: 1525680402692737059, guid: 6e6d028025152d34c81bcd0b963da769, type: 3}
   treePrefab: {fileID: 6829938794046421993, guid: 47454973657a1b94492b7b2d7f42cdf9, type: 3}
+  zombiePrefab: {fileID: 7346980193422537679, guid: 62686054eef063f4a8bcd58d4dc69941, type: 3}
+  weedCounter: 0
 --- !u!4 &2120386292
 Transform:
   m_ObjectHideFlags: 0
