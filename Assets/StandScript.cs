@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using System.Collections;
+using JetBrains.Annotations;
+using NUnit.Framework;
 
 public struct Item
 {
@@ -24,28 +26,30 @@ public class StandScript : MonoBehaviour
 {
     private GameObject player;
 
-    public GameObject imgGUI;
+    public GameObject imgGUI, sellImgGUI;
     public GameObject standGUI;
     public GameObject headingStandGUI;
-    public InventoryScript inventoryScript;
+    private InventoryScript inventoryScript;
 
-    public bool isActive = false;
+    public bool isActive = false, isBuying = true;
 
     private List<Item> items = new List<Item>();
 
     void Start()
     {
+        inventoryScript = GameObject.Find("Inventory").GetComponent<InventoryScript>();
         player = GameObject.Find("Player");
+        
 
         items.Add(new Item("Hoe", 6, "It creates dirt which lets you plant seeds."));
         items.Add(new Item("ChestPlacer", 3, "Lets you store multiple items easily."));
         items.Add(new Item("Seeds", 2, "Place seeds into the dirt and sell the plant for profit."));
+        items.Add(new Item("FencePlacer", 5, "A simple building block. Good for defense."));
         items.Add(new Item("Materials", 2, "For the currency for placing and building things."));
         items.Add(new Item("TakeDown", 20, "Its a light rifle that is good for hunting."));
-        UploadShop();
-
         standGUI.SetActive(false);
         headingStandGUI.SetActive(false);
+        transform.position += new Vector3(1,0,0);
     }
 
     void Update()
@@ -54,8 +58,14 @@ public class StandScript : MonoBehaviour
 
         Keyboard keyboard = Keyboard.current;
 
-        if (keyboard.digit1Key.wasPressedThisFrame)
-            BuyItem(0);
+        if (keyboard.digit1Key.wasPressedThisFrame && isBuying == true)
+        {
+            BuyItem(0);            
+        }
+        else if(keyboard.digit1Key.wasPressedThisFrame && isBuying == false)
+        {
+            SellItem();
+        }
         if (keyboard.digit2Key.wasPressedThisFrame)
             BuyItem(1);
         if (keyboard.digit3Key.wasPressedThisFrame)
@@ -84,7 +94,8 @@ public class StandScript : MonoBehaviour
 
         standGUI.SetActive(isActive);
         headingStandGUI.SetActive(isActive);
-
+        if(isBuying) UploadShop();
+        else UploadSell();
         /*if (isActive)
         {
             UploadShop();
@@ -105,10 +116,9 @@ public class StandScript : MonoBehaviour
 
         GetItem(items[index].name, items[index].price);
     }
-
-    public void GetItem(string itemName, int numcoins)
+    public void GetItem(string itemName, int numcoins = 0)
     {
-        if(itemName == "Material")
+        if(itemName == "Materials")
         {
             inventoryScript.materials+=10;
             inventoryScript.coins -= numcoins;
@@ -121,10 +131,21 @@ public class StandScript : MonoBehaviour
             transform.position + new Vector3(3,0,0),
             Quaternion.identity
         );
-
+        
         dropped.tag = "Loot";
         dropped.name = itemName + "Loot";
         inventoryScript.coins -= numcoins;
+    }
+
+    public void SellItem()
+    {
+        int sum = 0;
+        foreach(Stock i in inventoryScript.stocks)
+        {
+            sum += i.price * i.quantity;
+        }
+        inventoryScript.coins += sum;
+        inventoryScript.stocks.Clear();
     }
 
     public void UploadShop()
@@ -132,7 +153,6 @@ public class StandScript : MonoBehaviour
         StartCoroutine(ClearSelectionNextFrame());
         foreach (Transform child in standGUI.transform)
             Destroy(child.gameObject);
-        int index = 1;
         foreach (Item item in items)
         {
             GameObject clone = Instantiate(imgGUI, standGUI.transform, false);
@@ -152,12 +172,25 @@ public class StandScript : MonoBehaviour
 
             buyButton.navigation = new Navigation { mode = Navigation.Mode.None };
         }
-
+        headingStandGUI.transform.GetChild(0).GetComponent<TMP_Text>().text = "Walstand";    
+        headingStandGUI.GetComponent<Image>().color = new Color32(0, 83, 226, 255);
         EventSystem.current.SetSelectedGameObject(null);
     }
-    public void UploadEbay()
+    public void UploadSell()
     {
-        
+        StartCoroutine(ClearSelectionNextFrame());
+        foreach(Transform child in standGUI.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        GameObject clone = Instantiate(sellImgGUI, standGUI.transform, false);
+        Button sellButton = clone.transform.GetComponentInChildren<Button>();
+        sellButton.onClick.RemoveAllListeners();
+        sellButton.onClick.AddListener(() => SellItem());
+
+        headingStandGUI.transform.GetChild(0).GetComponent<TMP_Text>().text = "Selling Stand";
+        headingStandGUI.GetComponent<Image>().color = new Color32(163 ,68, 27, 255);
+
     }
 
     /*public void Clicked(Item item)
@@ -172,11 +205,19 @@ public class StandScript : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
     }
 
-    void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.name.Contains("Tile"))
         {
             Destroy(collision.gameObject);
         }
     }
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if(collision.name.Contains("Tile"))
+        {
+            Destroy(collision.gameObject);
+        }
+    }
+
 }

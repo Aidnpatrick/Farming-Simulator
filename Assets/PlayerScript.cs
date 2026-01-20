@@ -9,13 +9,15 @@ public class PlayerScript : MonoBehaviour
     public bool canGrab = false;
     private float moveSpeed = 5;
     private string currentLoot = "";
-    public float health = 100;
+    public float health = 10;
+    public Vector3 startinglocation = new Vector3(30,30,1);
     private GameObject currentLootObject = null;
     private Rigidbody2D rb;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        transform.position = startinglocation;
     }
 
     void Update()

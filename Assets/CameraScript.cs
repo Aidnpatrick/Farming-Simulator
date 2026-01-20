@@ -83,13 +83,23 @@ public class CameraScript : MonoBehaviour
                 if (invScript.materials > 0 && !tileScript.isFull)
                 {
                     if (currentItem == "FencePlacer")
+                    {
                         Build(hit.collider.gameObject, fencePrefab, new Vector3(0,0,1), false);
+                        invScript.materials -= 2;
+                        
+                    }
 
                     if (currentItem == "ChestPlacer")
+                    {
                         Build(hit.collider.gameObject, chestPrefab, new Vector3(0,0,1), false);
+                        invScript.materials -=20;                 
+                    }
 
                     if (currentItem == "Hoe")
+                    {
                         Build(hit.collider.gameObject, dirtPrefab, new Vector3(0,0,1), false);
+                        invScript.materials -= 1;
+                    }
                 }
 
                 if (hit.collider.transform.childCount > 0)
@@ -106,28 +116,50 @@ public class CameraScript : MonoBehaviour
                     }
                 }
             }
-
             if (Input.GetMouseButtonDown(0) && tileScript.isFull)
             {
                 Transform child = hit.collider.transform.GetChild(0);
 
+                // ----- DIRT -----
                 if (child.name.Contains("Dirt") && child.childCount > 0)
                 {
                     Destroy(child.GetChild(0).gameObject);
+
                     DirtScript ds = child.GetComponent<DirtScript>();
                     ds.isFull = false;
+
                     invScript.materials++;
-                    //Transform grandChild = child.GetChild(0);
-                    if(ds.isGrown)
-                    {
-                        invScript.coins+=5;
-                    }
+                    if (ds.isGrown)
+                        invScript.AddStock("Wheat", 1, 2);
+
+
                     return;
                 }
 
+                // ----- TREE -----
+                if (child.name.Contains("Tree") && child.childCount > 1)
+                {
+                    Transform apple = child.GetChild(1);
+
+                    if (apple.name.Contains("Apple"))
+                    {
+                        TreeScript treeScript = child.GetComponent<TreeScript>();
+                        if (treeScript.apples.Count == 0) return;
+                        invScript.AddStock("Apple", 1, 1);
+                        treeScript.apples.RemoveAt(treeScript.apples.Count - 1);
+                        Destroy(apple.gameObject);
+                        return;
+                    }
+                }
+                // ----- DEFAULT REMOVE -----
                 Destroy(child.gameObject);
                 tileScript.isFull = false;
                 invScript.materials++;
+            }
+
+            if (keyboard.eKey.wasPressedThisFrame)
+            {
+                Debug.Log("Pressed on tile");
             }
         }
         if(Input.GetMouseButtonDown(0))
@@ -142,18 +174,27 @@ public class CameraScript : MonoBehaviour
                     invScript.materials++;
                 Destroy(hit.collider.gameObject);
             }
-        }
 
+            if(hit.collider.name.Contains("Apple"))
+            {
+                TreeScript treeScript = hit.collider.transform.parent.GetComponent<TreeScript>();
+                treeScript.apples.RemoveAt(treeScript.apples.Count - 1);
+                invScript.AddStock("Apple", 1, 1);
+
+                Destroy(hit.collider.gameObject);
+            }
+        }
         if (hit.collider.name.Contains("Stand"))
         {
             float distance = Vector3.Distance(player.transform.position, hit.collider.transform.position);
             StandScript standScript = hit.collider.GetComponentInParent<StandScript>();
 
             if (standScript == null) return;
-
+            
             if (keyboard.eKey.wasPressedThisFrame &&
                 distance <= 8 &&
                 currentStandScript == null)
+                
             {
                 standScript.SetActive(true);
                 playerScript.canMove = false;

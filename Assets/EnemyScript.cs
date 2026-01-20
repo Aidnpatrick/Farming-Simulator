@@ -7,7 +7,7 @@ public class EnemyScript : MonoBehaviour
     public float[] outputs = {0f, 0f};
     public Vector3 lastKnownLocation;
     public bool canSeePlayer;
-    public float movingCooldown = 0f;
+    public float movingCooldown = 0f, attackingCooldown;
     public float speed = 10;
     public float health = 100;
     private GameObject player;
@@ -21,6 +21,7 @@ public class EnemyScript : MonoBehaviour
     void Update()
     {
         movingCooldown -= Time.deltaTime;
+        attackingCooldown -= Time.deltaTime;
         float distanceFromPlayer = Vector3.Distance(player.transform.position, transform.position);
         canSeePlayer = distanceFromPlayer <= 5f;
 
@@ -70,7 +71,11 @@ public class EnemyScript : MonoBehaviour
         if(collision.name == "Player")
         {
             PlayerScript ps = collision.GetComponent<PlayerScript>();
-            ps.health -= 10;
+            if(attackingCooldown <= 0)
+            {
+                ps.health -= 10;
+                attackingCooldown = 3;
+            }
             
         }
         if(collision.name.Contains("Bullet"))
