@@ -10,14 +10,19 @@ public class PlayerScript : MonoBehaviour
     private float moveSpeed = 5;
     private string currentLoot = "";
     public float health = 10;
-    public Vector3 startinglocation = new Vector3(30,30,1);
+    public Vector3 startinglocation = new Vector3(20,30,1);
     private GameObject currentLootObject = null;
     private Rigidbody2D rb;
-
-    void Start()
+    public void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        gameObject.SetActive(false);
         transform.position = startinglocation;
+
+    }
+    public void StartGame()
+    {
+        gameObject.SetActive(true);
+        rb = GetComponent<Rigidbody2D>();
     }
 
     void Update()

@@ -51,7 +51,7 @@ public class InventoryScript : MonoBehaviour
     void OnEnable()
     {
         UpdatePlayerChildren();
- 
+        
     }
     void Update()
     {

@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine.InputSystem;
 
-#region SAVE DATA
-
 [System.Serializable]
 public class WorldObjectData
 {
     public string id;
-    public Vector3 position;
+    public int tileIndex;
 }
 
 [System.Serializable]
@@ -21,53 +19,49 @@ public class SaveData
     public List<Stock> stockSaved;
 }
 
-
-#endregion
-
-#region SAVE SYSTEM
-
 public static class SaveSystem
 {
     static string path = Application.persistentDataPath + "/save.json";
 
     public static void Save(SaveData data)
     {
-        string json = JsonUtility.ToJson(data, true);
-        File.WriteAllText(path, json);
+        File.WriteAllText(path, JsonUtility.ToJson(data, true));
     }
 
     public static SaveData Load()
     {
         if (!File.Exists(path)) return null;
-        string json = File.ReadAllText(path);
-        return JsonUtility.FromJson<SaveData>(json);
+        return JsonUtility.FromJson<SaveData>(File.ReadAllText(path));
     }
 }
 
-#endregion
-
 public class GameControlScript : MonoBehaviour
 {
-    public float time = 0f;
-    public bool isDay = true;
-
     public CameraScript cameraScript;
     public InventoryScript inventoryScript;
     public StandScript standScript;
-
+    public GameObject menuCanva;
     public GameObject weedPrefab;
     public GameObject treePrefab;
     public GameObject zombiePrefab;
 
     private GameObject[] tiles;
     private string[] treeTypes = { "Tree4" };
-    
+    public bool isDay = true;
 
-    void Start()
+    public void Start()
+    {
+        SpawnWorld();
+    }
+    public void StartGame()
     {
         cameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
         standScript = GameObject.Find("Stand").GetComponent<StandScript>();
+        inventoryScript = FindObjectOfType<InventoryScript>();
+        menuCanva.SetActive(false);
+
         tiles = GameObject.FindGameObjectsWithTag("Tile");
+        System.Array.Sort(tiles, (a, b) => a.name.CompareTo(b.name));
 
         StartCoroutine(DayNightCycle());
         StartCoroutine(Weeds());
@@ -76,58 +70,58 @@ public class GameControlScript : MonoBehaviour
         if (data != null)
             LoadWorld(data);
         else
-        {
-            Debug.Log("Data is null");
-            SpawnWorld();        
-        }
+            SpawnWorld();
         */
         SpawnWorld();
+
     }
 
     void Update()
     {
-        time += Time.deltaTime;
-
+        /*
         if (Keyboard.current.oKey.wasPressedThisFrame)
-        {
             SaveSystem.Save(BuildSaveData());
-            Debug.Log("World Saved");
-        }
-        /*if(Keyboard.current.pKey.wasPressedThisFrame)
+
+        if (Keyboard.current.pKey.wasPressedThisFrame)
         {
             SaveData data = SaveSystem.Load();
-            LoadWorld(data);
+            if (data != null)
+                LoadWorld(data);
+        }
+        */
 
-        }*/
+        if(Keyboard.current.oKey.wasPressedThisFrame)
+        {
+            foreach(GameObject i in GameObject.FindGameObjectsWithTag("Weed"))
+            {
+                Destroy(i);
+            }
+        }
+        
     }
-
-    #region SAVE / LOAD
 
     SaveData BuildSaveData()
     {
         SaveData data = new SaveData();
 
-        foreach (GameObject weed in GameObject.FindGameObjectsWithTag("Weed"))
+        for (int i = 0; i < tiles.Length; i++)
         {
-            data.worldObjects.Add(new WorldObjectData
+            if (tiles[i].transform.childCount > 0)
             {
-                id = "Weed",
-                position = weed.transform.position
-            });
-        }
+                string name = tiles[i].transform.GetChild(0).name.Replace("(Clone)", "");
+                if (name.Contains("Weed")) name = "Weed";
+                if (name.Contains("Tree")) name = "Tree";
 
-        foreach (GameObject tree in GameObject.FindGameObjectsWithTag("Tree"))
-        {
-            data.worldObjects.Add(new WorldObjectData
-            {
-                id = "Tree",
-                position = tree.transform.position
-            });
+                data.worldObjects.Add(new WorldObjectData
+                {
+                    id = name,
+                    tileIndex = i
+                });
+            }
         }
 
         data.inventorySaved = inventoryScript.inventory;
         data.stockSaved = inventoryScript.stocks;
-
         return data;
     }
 
@@ -135,50 +129,59 @@ public class GameControlScript : MonoBehaviour
     {
         foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Weed"))
             Destroy(obj);
-
         foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Tree"))
             Destroy(obj);
 
         foreach (WorldObjectData obj in data.worldObjects)
         {
-            GameObject prefab = null;
+            if (obj.tileIndex < 0 || obj.tileIndex >= tiles.Length) continue;
 
-            if (obj.id == "Weed") prefab = weedPrefab;
-            if (obj.id == "Tree") prefab = treePrefab;
+            if (obj.id == "Weed")
+                cameraScript.Build(tiles[obj.tileIndex], weedPrefab, new Vector3(0, 0, 1), true);
 
-            if (prefab != null)
-            
-                Instantiate(prefab, obj.position, Quaternion.identity);
+            if (obj.id == "Tree")
+                cameraScript.Build(tiles[obj.tileIndex], treePrefab, new Vector3(0, 1f, 1), true, treeTypes);
         }
 
         inventoryScript.inventory = data.inventorySaved;
         inventoryScript.stocks = data.stockSaved;
-
-        Debug.Log("World Loaded");
     }
-
-    #endregion
-
-    #region WORLD GEN
-
     void SpawnWorld()
     {
-        for (int i = 0; i < 20; i++)
-        {
-            GameObject tile = tiles[Random.Range(0, tiles.Length)];
-            TileScript ts = tile.GetComponent<TileScript>();
-
-            if (!ts.isFull)
-                cameraScript.Build(tile, weedPrefab, new Vector3(0, 0, 1), true);
-        }
-
         for (int i = 0; i < 30; i++)
         {
             GameObject tile = tiles[Random.Range(0, tiles.Length)];
-            TileScript ts = tile.GetComponent<TileScript>();
+            if (!tile.GetComponent<TileScript>().isFull && GameObject.FindGameObjectsWithTag("Weed").Length <= 80)
+                cameraScript.Build(tile, weedPrefab, new Vector3(0, 0, 1), true);
+        }
 
-            if (!ts.isFull)
-                cameraScript.Build(tile, treePrefab, new Vector3(0, 1f, 1), true, treeTypes);
+        for (int i = 0; i < 20; i++)
+        {
+            GameObject tile = tiles[Random.Range(0, tiles.Length)];
+            
+            GameObject treeClone;
+            if (!tile.GetComponent<TileScript>().isFull)
+            {
+                treeClone = cameraScript.Build(tile, treePrefab, new Vector3(0, 1f, 1), true, treeTypes);
+                Vector3 tilePos = treeClone.transform.position; 
+
+                foreach(GameObject otherTile in tiles)
+                {
+                    if (otherTile == tile) 
+                        continue;
+
+                    TreeScript tree = otherTile.GetComponentInChildren<TreeScript>();
+                    if (tree == null) 
+                        continue;
+                    
+                    float distance = Vector3.Distance(tilePos, tree.transform.position);
+                    if(distance < 5)
+                    {
+                        Destroy(treeClone);
+                        break;
+                    }
+                }           
+            }
         }
     }
 
@@ -187,13 +190,12 @@ public class GameControlScript : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(2f);
-
             GameObject tile = tiles[Random.Range(0, tiles.Length)];
-            TileScript ts = tile.GetComponent<TileScript>();
-
-            if (!ts.isFull)
+            if (!tile.GetComponent<TileScript>().isFull)
                 cameraScript.Build(tile, weedPrefab, new Vector3(0, 0, 1), true);
+            SpawnWorld();
         }
+        
     }
 
     IEnumerator DayNightCycle()
@@ -202,11 +204,8 @@ public class GameControlScript : MonoBehaviour
         {
             yield return new WaitForSeconds(10f);
             isDay = !isDay;
-
             if (!isDay)
                 Instantiate(zombiePrefab, new Vector3(0, 0, 1), Quaternion.identity);
         }
     }
-
-    #endregion
 }

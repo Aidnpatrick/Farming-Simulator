@@ -7,6 +7,7 @@ public class TileScript : MonoBehaviour
     void Update()
     {
         if(transform.childCount == 0) isFull = false;
+        else isFull = true;
     }
     void OnTriggerEnter2D(Collider2D collision)
     {

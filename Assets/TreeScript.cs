@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor.Animations;
 using UnityEngine;
 
 public class TreeScript : MonoBehaviour
@@ -18,6 +19,13 @@ public class TreeScript : MonoBehaviour
             Vector3 randomOffSet = new Vector3(Random.Range(-0.1f,0.1f), Random.Range(-0.1f,0.1f), 0);
             apples.Add(cameraScript.Build(gameObject, applePrefab, randomOffSet, true));
         }
-
+    }
+    void Update()
+    {
+        if(Random.Range(0f,100f) < 0.5f && gameObject.transform.childCount < 4)
+        {
+            Vector3 randomOffSet = new Vector3(Random.Range(-0.1f,0.1f), Random.Range(-0.1f,0.1f), 0);
+            apples.Add(cameraScript.Build(gameObject, applePrefab, randomOffSet, true));
+        }
     }
 }

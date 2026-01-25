@@ -5,7 +5,6 @@ public class TileGeneratorScript : MonoBehaviour
 {
     public GameObject tilePrefab;
 
-    
     void Start()
     {
         for(int i = 0; i < 40; i++)

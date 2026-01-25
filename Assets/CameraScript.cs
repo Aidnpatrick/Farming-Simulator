@@ -21,10 +21,23 @@ public class CameraScript : MonoBehaviour
 
     public GameObject fencePrefab, chestPrefab, dirtPrefab, plantPrefab;
 
-    private bool suppressInteraction = false;
+    public bool suppressInteraction = false, menuInteraction = false;
+
+    void Start()
+    {
+        menuInteraction = true;
+    }
+    public void StartGame()
+    {
+        suppressInteraction = false;
+        menuInteraction = false;
+        gameObject.SetActive(true);
+    }
 
     void Update()
     {
+        if(menuInteraction) return;
+        
         if (currentStandScript != null && currentStandScript.isActive)
         {
             if (EventSystem.current != null)
@@ -34,8 +47,8 @@ public class CameraScript : MonoBehaviour
                 return;
         }
 
-        transform.position = player.transform.position + playerCameraPos;
 
+        transform.position = player.transform.position + playerCameraPos;
         //if (suppressInteraction)
         /*{
             suppressInteraction = false;
