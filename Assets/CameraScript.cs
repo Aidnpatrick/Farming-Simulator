@@ -3,6 +3,9 @@ using TMPro;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using NUnit.Framework;
+using UnityEngine.UIElements;
+using UnityEngine.UI;
+using System.Diagnostics.CodeAnalysis;
 
 public class CameraScript : MonoBehaviour
 {
@@ -13,18 +16,22 @@ public class CameraScript : MonoBehaviour
     public float interactRange = 3f;
 
     public GameObject player;
+    public GameObject cursorText;
 
     public bool canEdit = true;
     public bool isOnTile = false;
 
     public StandScript currentStandScript = null;
 
-    public GameObject fencePrefab, chestPrefab, dirtPrefab, plantPrefab;
-
+    public GameObject fencePrefab, chestPrefab, dirtPrefab, plantPrefab, gravelPrefab;
+    
     public bool suppressInteraction = false, menuInteraction = false;
 
     void Start()
     {
+        
+        transform.position += new Vector3(25,30,0);
+
         menuInteraction = true;
     }
     public void StartGame()
@@ -37,7 +44,7 @@ public class CameraScript : MonoBehaviour
     void Update()
     {
         if(menuInteraction) return;
-        
+
         if (currentStandScript != null && currentStandScript.isActive)
         {
             if (EventSystem.current != null)
@@ -88,7 +95,12 @@ public class CameraScript : MonoBehaviour
         if (hit.collider.gameObject.name.Contains("Tile"))
         {
             TileScript tileScript = hit.collider.gameObject.GetComponent<TileScript>();
+            if(hit.collider.transform.childCount == 0){}
+                //if(invScript.inventory.Count > 0) CursorText("Add", invScript.inventory[invScript.equippedItem - 1]);
+            else{}
+                //CursorText("Destroy", hit.collider.transform.GetChild(0).name);
 
+            
             if (Input.GetMouseButtonDown(1))
             {
                 string currentItem = invScript.inventory[invScript.equippedItem - 1];
@@ -99,7 +111,6 @@ public class CameraScript : MonoBehaviour
                     {
                         Build(hit.collider.gameObject, fencePrefab, new Vector3(0,0,1), false);
                         invScript.materials -= 2;
-                        
                     }
 
                     if (currentItem == "ChestPlacer")
@@ -107,7 +118,12 @@ public class CameraScript : MonoBehaviour
                         Build(hit.collider.gameObject, chestPrefab, new Vector3(0,0,1), false);
                         invScript.materials -=20;                 
                     }
-
+                    if(currentItem == "Shovel")
+                    {
+                        Build(hit.collider.gameObject, gravelPrefab, new Vector3(0,0,1), false);
+                        invScript.materials -= 10;
+                    }
+                    
                     if (currentItem == "Hoe")
                     {
                         Build(hit.collider.gameObject, dirtPrefab, new Vector3(0,0,1), false);
@@ -128,6 +144,8 @@ public class CameraScript : MonoBehaviour
                         ds.NewPlant();
                     }
                 }
+
+
             }
             if (Input.GetMouseButtonDown(0) && tileScript.isFull)
             {
@@ -152,6 +170,7 @@ public class CameraScript : MonoBehaviour
                 // ----- TREE -----
                 if (child.name.Contains("Tree") && child.childCount > 1)
                 {
+                    //CursorText("Shake",child.name);
                     Transform apple = child.GetChild(1);
 
                     if (apple.name.Contains("Apple"))
@@ -179,7 +198,8 @@ public class CameraScript : MonoBehaviour
         {
             if(hit.collider.name.Contains("Fence") || hit.collider.name.Contains("Weed") || hit.collider.name.Contains("Tree"))
             {
-                
+                //CursorText("Break",hit.collider.name);
+
                 Transform parent = hit.collider.transform.parent;
                 TileScript ts = parent.GetComponent<TileScript>();
                 ts.isFull = false;
@@ -190,6 +210,8 @@ public class CameraScript : MonoBehaviour
 
             if(hit.collider.name.Contains("Apple"))
             {
+                //CursorText("Get",hit.collider.name);
+
                 TreeScript treeScript = hit.collider.transform.parent.GetComponent<TreeScript>();
                 treeScript.apples.RemoveAt(treeScript.apples.Count - 1);
                 invScript.AddStock("Apple", 1, 1);
@@ -199,15 +221,17 @@ public class CameraScript : MonoBehaviour
         }
         if (hit.collider.name.Contains("Stand"))
         {
+            //CursorText("Open",hit.collider.name);
+
             float distance = Vector3.Distance(player.transform.position, hit.collider.transform.position);
             StandScript standScript = hit.collider.GetComponentInParent<StandScript>();
 
             if (standScript == null) return;
             
+
             if (keyboard.eKey.wasPressedThisFrame &&
-                distance <= 8 &&
+                distance <= 15 &&
                 currentStandScript == null)
-                
             {
                 standScript.SetActive(true);
                 playerScript.canMove = false;
@@ -217,7 +241,43 @@ public class CameraScript : MonoBehaviour
                 EventSystem.current.SetSelectedGameObject(null);
             }
         }
-    }
+
+
+        Transform hitTransform = hit.collider.transform;
+
+        if (!hit.collider.name.Contains("Tile"))
+        {
+            CursorText("", hit.collider.name);
+            return;
+        }
+
+        if (hitTransform.childCount == 0)
+        {
+            CursorText("", "");
+            return;
+        }
+
+        Transform firstChild = hitTransform.GetChild(0);
+
+        if (firstChild.childCount == 0)
+        {
+            CursorText("", firstChild.name);
+            return;
+        }
+
+        if (firstChild.name.Contains("Tree"))
+        {
+            if (firstChild.childCount > 1)
+                CursorText("", firstChild.GetChild(1).name);
+            else
+                CursorText("", firstChild.name);
+
+            return;
+        }
+
+        CursorText("", firstChild.GetChild(0).name);
+
+            }
 
     public GameObject Build(GameObject parent, GameObject prefab, Vector3 position, bool isNatural, string[] sprites = null)
     {
@@ -240,5 +300,17 @@ public class CameraScript : MonoBehaviour
 
 
         return obj;
+    }
+
+    public void CursorText(string verb, string collisionName)
+    {
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+
+        cursorText.transform.position = mouseWorldPos;
+        Vector3 pos = cursorText.transform.position;
+        pos.z = 1f;
+        collisionName = collisionName.Replace("Clone", "");
+        cursorText.transform.position = pos;
+        cursorText.GetComponent<TMP_Text>().text = verb + "" + collisionName;
     }
 }

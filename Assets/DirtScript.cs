@@ -73,4 +73,9 @@ public class DirtScript : MonoBehaviour
 
         growth = 0;
     }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.name.Contains("Enemy"))
+            Destroy(gameObject);
+    }
 }

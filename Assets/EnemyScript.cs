@@ -1,56 +1,94 @@
+using System.Security.Cryptography;
 using UnityEngine;
 
 public class EnemyScript : MonoBehaviour
 {
-    //walking to player | patrolling
-    public float[] weights = {1f, 1f};
-    public float[] outputs = {0f, 0f};
+    private GameControlScript gameControlScript;
+    public float speed = 10f;
+    public float health = 100f;
+    public float visionRange = 5f;
+
     public Vector3 lastKnownLocation;
     public bool canSeePlayer;
-    public float movingCooldown = 0f, attackingCooldown;
-    public float speed = 10;
-    public float health = 100;
-    private GameObject player;
 
+    public float movingCooldown;
+    public float attackingCooldown;
+    public GameObject targetCrop = null;
+    private GameObject player;
 
     void Start()
     {
+        gameControlScript = GameObject.Find("GameControl").GetComponent<GameControlScript>();
         player = GameObject.Find("Player");
+        movingCooldown = 0f;
+        attackingCooldown = 0f;
     }
 
     void Update()
     {
+        if (player == null) return;
+
         movingCooldown -= Time.deltaTime;
         attackingCooldown -= Time.deltaTime;
-        float distanceFromPlayer = Vector3.Distance(player.transform.position, transform.position);
-        canSeePlayer = distanceFromPlayer <= 5f;
+
+        float distanceFromPlayer =
+            Vector3.Distance(player.transform.position, transform.position);
+
+        canSeePlayer = distanceFromPlayer <= visionRange;
 
         if (canSeePlayer)
         {
             lastKnownLocation = player.transform.position;
             movingCooldown = 15f;
-            Actions(0);
+            MoveTowards(player.transform.position);
         }
         else if (movingCooldown <= 0f)
         {
             lastKnownLocation = FindRandomPos();
             movingCooldown = 10f;
-            Actions(1);
         }
-    }
-    void Actions(int action)
-    {
-        Vector3 direction = Vector3.zero;
-        switch(action)
+        else
         {
-            case 0: 
-                direction = player.transform.position - transform.position;
-                break;
-
-            case 1: 
-                direction = lastKnownLocation - transform.position;
-                break;
+            FindTargetCrop();
+            if(targetCrop == null) 
+                MoveTowards(lastKnownLocation);
+            else 
+                MoveTowards(targetCrop.transform.position);
         }
+
+
+        if(gameControlScript.isDay)
+        {
+            health -= 0.5f;
+        }
+        
+    }
+    void FindTargetCrop()
+    {
+        foreach (GameObject tile in gameControlScript.tiles)
+        {
+            DirtScript ds = tile.GetComponentInChildren<DirtScript>();
+
+            if (ds == null) continue;
+            if (!ds.isFull) continue;
+
+            if (Vector3.Distance(tile.transform.position, transform.position) < 8f)
+            {
+                targetCrop = tile;
+                return;
+            }
+        }
+
+        targetCrop = null;
+    }
+
+
+    void MoveTowards(Vector3 target)
+    {
+        Vector3 direction = target - transform.position;
+        direction.z = 0f;
+
+        if (direction.magnitude < 0.1f) return;
 
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
@@ -58,34 +96,60 @@ public class EnemyScript : MonoBehaviour
         transform.position += direction.normalized * speed * Time.deltaTime;
     }
 
-    public Vector3 FindRandomPos()
+    Vector3 FindRandomPos()
     {
-        Vector3 pos = new Vector2(
-            Random.Range(-10, 10),
-            Random.Range(-10, 10)
+        
+        Vector2 offset = new Vector2(
+            Random.Range(-10f, 10f),
+            Random.Range(-10f, 10f)
         );
-        return transform.position + pos;
+        if(offset.x < 0)           
+            offset = new Vector2(Random.Range(-10f, 10f), Random.Range(-10f, 10f));
+        return transform.position + (Vector3)offset;
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.name == "Player")
+        if (collision.CompareTag("Player"))
         {
-            PlayerScript ps = collision.GetComponent<PlayerScript>();
-            if(attackingCooldown <= 0)
+            if (attackingCooldown <= 0f)
             {
-                ps.health -= 10;
-                attackingCooldown = 3;
+                PlayerScript ps = collision.GetComponent<PlayerScript>();
+                if (ps != null)
+                {
+                    ps.health -= 10f;
+                    attackingCooldown = 3f;
+                }
             }
-            
         }
-        if(collision.name.Contains("Bullet"))
+
+        if (collision.CompareTag("Bullet"))
         {
-            health -=20;
+            health -= 20f;
             Destroy(collision.gameObject);
-            if(health <= 0)
+
+            if (health <= 0f)
             {
                 Destroy(gameObject);
             }
         }
+        if (collision.CompareTag("Tile"))
+        {
+            GameObject tile = collision.gameObject;
+
+            if (tile == targetCrop)
+            {
+                DirtScript ds = tile.GetComponentInChildren<DirtScript>();
+                if (ds == null) return;
+
+                if (ds.transform.childCount > 0)
+                {
+                    Destroy(ds.transform.GetChild(0).gameObject);
+                }
+                ds.isFull = false;
+                targetCrop = null;
+            }
+        }
+
     }
 }

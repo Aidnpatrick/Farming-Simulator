@@ -42,6 +42,7 @@ public class StandScript : MonoBehaviour
         
 
         items.Add(new Item("Hoe", 6, "It creates dirt which lets you plant seeds."));
+        items.Add(new Item("Shovel", 8, "It makes Gravel Path which makes player faster."));
         items.Add(new Item("ChestPlacer", 3, "Lets you store multiple items easily."));
         items.Add(new Item("Seeds", 2, "Place seeds into the dirt and sell the plant for profit."));
         items.Add(new Item("FencePlacer", 5, "A simple building block. Good for defense."));
@@ -153,11 +154,12 @@ public class StandScript : MonoBehaviour
         StartCoroutine(ClearSelectionNextFrame());
         foreach (Transform child in standGUI.transform)
             Destroy(child.gameObject);
+        int index = 1;
         foreach (Item item in items)
         {
             GameObject clone = Instantiate(imgGUI, standGUI.transform, false);
 
-            clone.transform.GetChild(0).GetComponent<TMP_Text>().text = item.name;
+            clone.transform.GetChild(0).GetComponent<TMP_Text>().text = item.name + "\n#" + index;
 
             Image img = clone.transform.GetChild(1).GetComponent<Image>();
             img.sprite = Resources.Load<Sprite>("Images/" + item.name);
@@ -175,6 +177,7 @@ public class StandScript : MonoBehaviour
         headingStandGUI.transform.GetChild(0).GetComponent<TMP_Text>().text = "Walstand";    
         headingStandGUI.GetComponent<Image>().color = new Color32(0, 83, 226, 255);
         EventSystem.current.SetSelectedGameObject(null);
+        index++;
     }
     public void UploadSell()
     {

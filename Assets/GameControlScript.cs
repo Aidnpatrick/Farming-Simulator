@@ -37,21 +37,29 @@ public static class SaveSystem
 
 public class GameControlScript : MonoBehaviour
 {
+    //color from backgroud grass: 57B200
+    
     public CameraScript cameraScript;
     public InventoryScript inventoryScript;
+    public GameObject gameCanvas;
     public StandScript standScript;
     public GameObject menuCanva;
+    public GameObject buyStand, sellStand;
     public GameObject weedPrefab;
     public GameObject treePrefab;
     public GameObject zombiePrefab;
 
-    private GameObject[] tiles;
+    public GameObject[] tiles;
     private string[] treeTypes = { "Tree4" };
     public bool isDay = true;
 
     public void Start()
     {
-        SpawnWorld();
+        gameCanvas.SetActive(false);
+        tiles = GameObject.FindGameObjectsWithTag("Tile");
+        for(int i = 0; i < 5; i++)
+            SpawnWorld();
+
     }
     public void StartGame()
     {
@@ -59,6 +67,7 @@ public class GameControlScript : MonoBehaviour
         standScript = GameObject.Find("Stand").GetComponent<StandScript>();
         inventoryScript = FindObjectOfType<InventoryScript>();
         menuCanva.SetActive(false);
+        gameCanvas.SetActive(true);
 
         tiles = GameObject.FindGameObjectsWithTag("Tile");
         System.Array.Sort(tiles, (a, b) => a.name.CompareTo(b.name));
@@ -73,7 +82,6 @@ public class GameControlScript : MonoBehaviour
             SpawnWorld();
         */
         SpawnWorld();
-
     }
 
     void Update()
@@ -92,10 +100,7 @@ public class GameControlScript : MonoBehaviour
 
         if(Keyboard.current.oKey.wasPressedThisFrame)
         {
-            foreach(GameObject i in GameObject.FindGameObjectsWithTag("Weed"))
-            {
-                Destroy(i);
-            }
+            Instantiate(zombiePrefab, new Vector3(0,0,1), Quaternion.identity);
         }
         
     }
@@ -173,14 +178,17 @@ public class GameControlScript : MonoBehaviour
                     TreeScript tree = otherTile.GetComponentInChildren<TreeScript>();
                     if (tree == null) 
                         continue;
-                    
-                    float distance = Vector3.Distance(tilePos, tree.transform.position);
-                    if(distance < 5)
+
+                    if(Vector3.Distance(tilePos, tree.transform.position) < 5)
                     {
                         Destroy(treeClone);
                         break;
                     }
                 }           
+                if(Vector3.Distance(buyStand.transform.position, treeClone.transform.position) < 10 && Vector3.Distance(sellStand.transform.position, treeClone.transform.position) < 10)
+                {
+                    Destroy(treeClone);
+                }
             }
         }
     }
@@ -197,6 +205,19 @@ public class GameControlScript : MonoBehaviour
         }
         
     }
+    IEnumerator Zombies()
+    {
+        for(int i = 0; i < 5; i++)
+        {
+            Vector3 randomPosition = new Vector3(
+                Random.Range(0,30),
+                Random.Range(0,30),
+                1
+            );
+            Instantiate(zombiePrefab, randomPosition, Quaternion.identity);
+            yield return new WaitForSeconds(5f);
+        }
+    }
 
     IEnumerator DayNightCycle()
     {
@@ -204,8 +225,8 @@ public class GameControlScript : MonoBehaviour
         {
             yield return new WaitForSeconds(10f);
             isDay = !isDay;
-            if (!isDay)
-                Instantiate(zombiePrefab, new Vector3(0, 0, 1), Quaternion.identity);
+            if (!isDay){}
+                //StartCoroutine(Zombies());
         }
     }
 }
