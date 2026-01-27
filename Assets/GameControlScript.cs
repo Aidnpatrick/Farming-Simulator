@@ -42,6 +42,7 @@ public class GameControlScript : MonoBehaviour
     public CameraScript cameraScript;
     public InventoryScript inventoryScript;
     public GameObject gameCanvas;
+    public GameObject gameInstructions;
     public StandScript standScript;
     public GameObject menuCanva;
     public GameObject buyStand, sellStand;
@@ -52,14 +53,23 @@ public class GameControlScript : MonoBehaviour
     public GameObject[] tiles;
     private string[] treeTypes = { "Tree4" };
     public bool isDay = true;
+    public bool gameInstructionsOpen = false;
 
     public void Start()
     {
         gameCanvas.SetActive(false);
+        gameInstructions.SetActive(false);
         tiles = GameObject.FindGameObjectsWithTag("Tile");
         for(int i = 0; i < 5; i++)
             SpawnWorld();
 
+    }
+    public void ToggleRules()
+    {
+        gameInstructionsOpen = !gameInstructionsOpen;
+        gameInstructions.SetActive(gameInstructionsOpen);
+        gameInstructions.transform.SetAsLastSibling();
+        
     }
     public void StartGame()
     {
@@ -156,7 +166,7 @@ public class GameControlScript : MonoBehaviour
         for (int i = 0; i < 30; i++)
         {
             GameObject tile = tiles[Random.Range(0, tiles.Length)];
-            if (!tile.GetComponent<TileScript>().isFull && GameObject.FindGameObjectsWithTag("Weed").Length <= 80)
+            if (!tile.GetComponent<TileScript>().isFull && tile.GetComponent<TileScript>().isFertile && GameObject.FindGameObjectsWithTag("Weed").Length <= 80)
                 cameraScript.Build(tile, weedPrefab, new Vector3(0, 0, 1), true);
         }
 
@@ -167,6 +177,7 @@ public class GameControlScript : MonoBehaviour
             GameObject treeClone;
             if (!tile.GetComponent<TileScript>().isFull)
             {
+
                 treeClone = cameraScript.Build(tile, treePrefab, new Vector3(0, 1f, 1), true, treeTypes);
                 Vector3 tilePos = treeClone.transform.position; 
 
@@ -184,7 +195,12 @@ public class GameControlScript : MonoBehaviour
                         Destroy(treeClone);
                         break;
                     }
-                }           
+                }
+                if(!tile.GetComponent<TileScript>().isFertile)
+                {
+                    treeClone.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/PalmTree");
+                }
+                
                 if(Vector3.Distance(buyStand.transform.position, treeClone.transform.position) < 10 && Vector3.Distance(sellStand.transform.position, treeClone.transform.position) < 10)
                 {
                     Destroy(treeClone);

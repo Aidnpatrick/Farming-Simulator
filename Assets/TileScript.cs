@@ -4,6 +4,8 @@ using UnityEngine;
 public class TileScript : MonoBehaviour
 {
     public bool isFull = false;
+    public bool isFertile;
+
     void Update()
     {
         if(transform.childCount == 0) isFull = false;

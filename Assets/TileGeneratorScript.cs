@@ -9,7 +9,7 @@ public class TileGeneratorScript : MonoBehaviour
     {
         int width = 40;
         int height = 40;
-        int edgeThickness = 2;
+        int edgeThickness = 3;
 
         Sprite sandSprite = Resources.Load<Sprite>("Images/Sand");
 
@@ -30,6 +30,11 @@ public class TileGeneratorScript : MonoBehaviour
                 if (isEdge)
                 {
                     tile.GetComponent<SpriteRenderer>().sprite = sandSprite;
+                    tile.GetComponent<TileScript>().isFertile = false;
+                }
+                else
+                {
+                    tile.GetComponent<TileScript>().isFertile = true;
                 }
             }
         }

@@ -124,7 +124,7 @@ public class CameraScript : MonoBehaviour
                         invScript.materials -= 10;
                     }
                     
-                    if (currentItem == "Hoe")
+                    if (currentItem == "Hoe" && tileScript.isFertile)
                     {
                         Build(hit.collider.gameObject, dirtPrefab, new Vector3(0,0,1), false);
                         invScript.materials -= 1;
@@ -151,7 +151,6 @@ public class CameraScript : MonoBehaviour
             {
                 Transform child = hit.collider.transform.GetChild(0);
 
-                // ----- DIRT -----
                 if (child.name.Contains("Dirt") && child.childCount > 0)
                 {
                     Destroy(child.GetChild(0).gameObject);
@@ -167,25 +166,28 @@ public class CameraScript : MonoBehaviour
                     return;
                 }
 
-                // ----- TREE -----
                 if (child.name.Contains("Tree") && child.childCount > 1)
                 {
                     //CursorText("Shake",child.name);
                     Transform apple = child.GetChild(1);
 
-                    if (apple.name.Contains("Apple"))
+                    if (apple.name.Contains("Apple") || apple.name.Contains("Coconut"))
                     {
                         TreeScript treeScript = child.GetComponent<TreeScript>();
                         if (treeScript.apples.Count == 0) return;
-                        invScript.AddStock("Apple", 1, 1);
+                        if(apple.name.Contains("Apple"))
+                            invScript.AddStock("Apple", 1, 1);
+                        else if(apple.name.Contains("Coconut"))
+                            invScript.AddStock("Coconut", 1, 1);
                         treeScript.apples.RemoveAt(treeScript.apples.Count - 1);
                         Destroy(apple.gameObject);
                         return;
                     }
                 }
-                // ----- DEFAULT REMOVE -----
                 Destroy(child.gameObject);
                 tileScript.isFull = false;
+                if(child.name.Contains("Tree"))
+                    invScript.AddStock("Wood", 1, 2);
                 invScript.materials++;
             }
 

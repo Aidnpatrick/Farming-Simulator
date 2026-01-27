@@ -6,7 +6,7 @@ public class TreeScript : MonoBehaviour
 {
     private InventoryScript invScript;
     private CameraScript cameraScript;
-    public GameObject applePrefab;
+    public GameObject applePrefab, coconutPrefab;
     public bool isFull = false;
     public List<GameObject> apples = new List<GameObject>();
     void Start()
@@ -17,7 +17,10 @@ public class TreeScript : MonoBehaviour
         {
             if(Random.Range(0f,1f) > 0.5f) continue;
             Vector3 randomOffSet = new Vector3(Random.Range(-0.1f,0.1f), Random.Range(-0.1f,0.1f), 0);
-            apples.Add(cameraScript.Build(gameObject, applePrefab, randomOffSet, true));
+            if(transform.GetComponentInParent<TileScript>().isFertile)
+                apples.Add(cameraScript.Build(gameObject, applePrefab, randomOffSet, true));
+            else
+                apples.Add(cameraScript.Build(gameObject, coconutPrefab, randomOffSet, true));
         }
     }
     void Update()
@@ -25,7 +28,10 @@ public class TreeScript : MonoBehaviour
         if(Random.Range(0f,100f) < 0.2f && gameObject.transform.childCount < 4)
         {
             Vector3 randomOffSet = new Vector3(Random.Range(-0.1f,0.1f), Random.Range(-0.1f,0.1f), 0);
-            apples.Add(cameraScript.Build(gameObject, applePrefab, randomOffSet, true));
+            if(transform.GetComponentInParent<TileScript>().isFertile)
+                apples.Add(cameraScript.Build(gameObject, applePrefab, randomOffSet, true));
+            else
+                apples.Add(cameraScript.Build(gameObject, coconutPrefab, randomOffSet, true));
         }
     }
 }

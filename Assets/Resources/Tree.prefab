@@ -236,5 +236,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   applePrefab: {fileID: 5458262839283900145, guid: fd1966069bdf8c14d80ecf18c4d378ac, type: 3}
+  coconutPrefab: {fileID: 6544351595987948493, guid: 97dd679ce1ff5d041aea90ffe4825682, type: 3}
   isFull: 0
+  isNormal: 1
   apples: []
