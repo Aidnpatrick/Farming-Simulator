@@ -1,20 +1,9 @@
-using System.Security.Cryptography;
 using UnityEngine;
 
-public class EnemyScript : MonoBehaviour
+public class EnemyScript : NPC
 {
-    private GameControlScript gameControlScript;
-    public float speed = 10f;
-    public float health = 100f;
-    public float visionRange = 5f;
-
-    public Vector3 lastKnownLocation;
-    public bool canSeePlayer;
-
-    public float movingCooldown;
-    public float attackingCooldown;
-    public GameObject targetCrop = null;
     private GameObject player;
+    public GameObject targetAnimal = null;
 
     void Start()
     {
@@ -26,8 +15,6 @@ public class EnemyScript : MonoBehaviour
 
     void Update()
     {
-        if (player == null) return;
-
         movingCooldown -= Time.deltaTime;
         attackingCooldown -= Time.deltaTime;
 
@@ -49,11 +36,22 @@ public class EnemyScript : MonoBehaviour
         }
         else
         {
-            FindTargetCrop();
+            targetCrop = FindTargetCrop(gameControlScript.tiles);
+            targetAnimal = FindTargetAnimal(gameControlScript.animals);
+            if(movingCooldown <= 0)
+                MoveTowards(lastKnownLocation);
+            else if(targetCrop != null)
+                MoveTowards(targetCrop.transform.position);
+            else if(targetAnimal != null)
+                MoveTowards(targetAnimal.transform.position);
+            /*
             if(targetCrop == null) 
                 MoveTowards(lastKnownLocation);
-            else 
+            else if(targetCrop == null)
                 MoveTowards(targetCrop.transform.position);
+            else if(targetAnimal != null)
+                MoveTowards(targetAnimal.transform.position);
+            */
         }
 
 
@@ -63,50 +61,7 @@ public class EnemyScript : MonoBehaviour
         }
         
     }
-    void FindTargetCrop()
-    {
-        foreach (GameObject tile in gameControlScript.tiles)
-        {
-            DirtScript ds = tile.GetComponentInChildren<DirtScript>();
 
-            if (ds == null) continue;
-            if (!ds.isFull) continue;
-
-            if (Vector3.Distance(tile.transform.position, transform.position) < 8f)
-            {
-                targetCrop = tile;
-                return;
-            }
-        }
-
-        targetCrop = null;
-    }
-
-
-    void MoveTowards(Vector3 target)
-    {
-        Vector3 direction = target - transform.position;
-        direction.z = 0f;
-
-        if (direction.magnitude < 0.1f) return;
-
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
-
-        transform.position += direction.normalized * speed * Time.deltaTime;
-    }
-
-    Vector3 FindRandomPos()
-    {
-        
-        Vector2 offset = new Vector2(
-            Random.Range(-10f, 10f),
-            Random.Range(-10f, 10f)
-        );
-        if(offset.x < 0)           
-            offset = new Vector2(Random.Range(-10f, 10f), Random.Range(-10f, 10f));
-        return transform.position + (Vector3)offset;
-    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -126,6 +81,7 @@ public class EnemyScript : MonoBehaviour
         if (collision.CompareTag("Bullet"))
         {
             health -= 20f;
+            gameControlScript.Blood(1, gameObject);
             Destroy(collision.gameObject);
 
             if (health <= 0f)

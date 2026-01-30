@@ -1,48 +1,69 @@
-
 using UnityEngine;
 
 public class TileGeneratorScript : MonoBehaviour
 {
+    public GameControlScript gameControlScript;
+    public CameraScript cameraScript;
     public GameObject tilePrefab;
+    public GameObject waterPrefab;
 
     void Start()
     {
         int width = 40;
         int height = 40;
         int edgeThickness = 3;
+        int waterDepth = 3;
 
         Sprite sandSprite = Resources.Load<Sprite>("Images/Sand");
+        int index = 1;
 
-        for (int i = 0; i < width; i++)
+        for (int x = 0; x < width; x++)
         {
-            for (int j = 0; j < height; j++)
+            for (int y = 0; y < height; y++)
             {
-                Vector2 pos = new Vector2(i, j);
+                Vector2 pos = new Vector2(x, y);
                 GameObject tile = Instantiate(tilePrefab, pos, Quaternion.identity);
-                tile.name = "Tile";
+                tile.name = "Tile" + index;
+
+                TileScript ts = tile.GetComponent<TileScript>();
+                SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
+
+                ts.tileID = index;
 
                 bool isEdge =
-                    i < edgeThickness ||
-                    i >= width - edgeThickness ||
-                    j < edgeThickness ||
-                    j >= height - edgeThickness;
+                    x < edgeThickness ||
+                    x >= width - edgeThickness ||
+                    y < edgeThickness ||
+                    y >= height - edgeThickness;
 
                 if (isEdge)
                 {
-                    tile.GetComponent<SpriteRenderer>().sprite = sandSprite;
-                    tile.GetComponent<TileScript>().isFertile = false;
+                    sr.sprite = sandSprite;
+                    ts.isFertile = false;
                 }
                 else
                 {
-                    tile.GetComponent<TileScript>().isFertile = true;
+                    ts.isFertile = true;
                 }
+
+                index++;
+            }
+        }
+
+        foreach (GameObject tile in gameControlScript.tiles)
+        {
+            
+            Vector2 pos = tile.transform.position;
+            TileScript ts = tile.GetComponent<TileScript>();
+
+            if (pos.y < waterDepth)
+            {
+                Debug.Log("asdsad");
+                cameraScript.Build(tile, waterPrefab, new Vector3(0, 0, 1), true);
+                ts.isFertile = false;
             }
         }
     }
-
-
-    void Update()
-    {
-
-    }
 }
+
+

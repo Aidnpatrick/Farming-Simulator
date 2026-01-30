@@ -1,8 +1,8 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+
 using UnityEngine.InputSystem;
+using System.Security.Cryptography;
 
 [System.Serializable]
 public class WorldObjectData
@@ -10,7 +10,7 @@ public class WorldObjectData
     public string id;
     public int tileIndex;
 }
-
+/*
 [System.Serializable]
 public class SaveData
 {
@@ -18,7 +18,8 @@ public class SaveData
     public List<string> inventorySaved;
     public List<Stock> stockSaved;
 }
-
+*/
+/*
 public static class SaveSystem
 {
     static string path = Application.persistentDataPath + "/save.json";
@@ -35,6 +36,8 @@ public static class SaveSystem
     }
 }
 
+*/
+
 public class GameControlScript : MonoBehaviour
 {
     //color from backgroud grass: 57B200
@@ -49,9 +52,12 @@ public class GameControlScript : MonoBehaviour
     public GameObject weedPrefab;
     public GameObject treePrefab;
     public GameObject zombiePrefab;
-
+    public GameObject animalPrefab;
+    public GameObject bloodPrefab;
     public GameObject[] tiles;
+    public GameObject[] animals;
     private string[] treeTypes = { "Tree4" };
+    private string[] bloodSprites = {"Blood1", "Blood2", "Blood3"};
     public bool isDay = true;
     public bool gameInstructionsOpen = false;
 
@@ -69,7 +75,6 @@ public class GameControlScript : MonoBehaviour
         gameInstructionsOpen = !gameInstructionsOpen;
         gameInstructions.SetActive(gameInstructionsOpen);
         gameInstructions.transform.SetAsLastSibling();
-        
     }
     public void StartGame()
     {
@@ -112,9 +117,16 @@ public class GameControlScript : MonoBehaviour
         {
             Instantiate(zombiePrefab, new Vector3(0,0,1), Quaternion.identity);
         }
+        if(Keyboard.current.pKey.wasPressedThisFrame)
+        {
+            Instantiate(animalPrefab, new Vector3(0,0,1), Quaternion.identity);
+        }
+
+        animals = GameObject.FindGameObjectsWithTag("Animal");
         
     }
 
+/*
     SaveData BuildSaveData()
     {
         SaveData data = new SaveData();
@@ -140,6 +152,7 @@ public class GameControlScript : MonoBehaviour
         return data;
     }
 
+
     void LoadWorld(SaveData data)
     {
         foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Weed"))
@@ -161,6 +174,7 @@ public class GameControlScript : MonoBehaviour
         inventoryScript.inventory = data.inventorySaved;
         inventoryScript.stocks = data.stockSaved;
     }
+*/
     void SpawnWorld()
     {
         for (int i = 0; i < 30; i++)
@@ -235,6 +249,21 @@ public class GameControlScript : MonoBehaviour
         }
     }
 
+    public void Blood(int amount, GameObject target)
+    {
+        for(int i = 0; i < amount; i++)
+        {
+            Vector3 randomPosition = new Vector3(
+                Random.Range(-0.5f,0.5f),
+                Random.Range(-0.5f,0.5f),
+                1
+            );
+            GameObject bloodClone = Instantiate(bloodPrefab, target.transform.position + randomPosition, Quaternion.identity);
+            Debug.Log(bloodSprites[Random.Range(0, bloodSprites.Length)]);
+            bloodClone.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/" + bloodSprites[Random.Range(0, bloodSprites.Length)]);
+            Destroy(bloodClone, 20);
+        }
+    }
     IEnumerator DayNightCycle()
     {
         while (true)

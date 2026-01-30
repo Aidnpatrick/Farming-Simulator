@@ -749,7 +749,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fdbda6508f2a96408d696476b2c3094, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameControlScript: {fileID: 2120386291}
+  cameraScript: {fileID: 519420033}
   tilePrefab: {fileID: 2643114943864211536, guid: 41267d54c26049447847ab7da3fc8dda, type: 3}
+  waterPrefab: {fileID: 5742792795911864992, guid: f30e947ad1cc05841bd5c3ea2eaa9181, type: 3}
 --- !u!4 &269505476
 Transform:
   m_ObjectHideFlags: 0
@@ -5031,7 +5034,10 @@ MonoBehaviour:
   weedPrefab: {fileID: 1525680402692737059, guid: 6e6d028025152d34c81bcd0b963da769, type: 3}
   treePrefab: {fileID: 6829938794046421993, guid: 47454973657a1b94492b7b2d7f42cdf9, type: 3}
   zombiePrefab: {fileID: 7346980193422537679, guid: 62686054eef063f4a8bcd58d4dc69941, type: 3}
+  animalPrefab: {fileID: 3902921950025813024, guid: 29fab033b598c284b8a0aa66bbf1466f, type: 3}
+  bloodPrefab: {fileID: 8373325070803082700, guid: a4c567e18ad98214fb1b9f1bbade12cb, type: 3}
   tiles: []
+  animals: []
   isDay: 1
   gameInstructionsOpen: 0
 --- !u!4 &2120386292

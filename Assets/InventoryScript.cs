@@ -48,11 +48,6 @@ public class InventoryScript : MonoBehaviour
         UpdatePlayerChildren();
     }
 
-    void OnEnable()
-    {
-        UpdatePlayerChildren();
-        
-    }
     void Update()
     {
         var keyboard = Keyboard.current;

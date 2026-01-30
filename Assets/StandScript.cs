@@ -173,11 +173,12 @@ public class StandScript : MonoBehaviour
             buyButton.onClick.AddListener(() => BuyItem(capturedItem.price));
 
             buyButton.navigation = new Navigation { mode = Navigation.Mode.None };
+            index++;
+
         }
         headingStandGUI.transform.GetChild(0).GetComponent<TMP_Text>().text = "Walstand";    
         headingStandGUI.GetComponent<Image>().color = new Color32(0, 83, 226, 255);
         EventSystem.current.SetSelectedGameObject(null);
-        index++;
     }
     public void UploadSell()
     {
@@ -208,19 +209,6 @@ public class StandScript : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if(collision.name.Contains("Tile"))
-        {
-            Destroy(collision.gameObject);
-        }
-    }
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if(collision.name.Contains("Tile"))
-        {
-            Destroy(collision.gameObject);
-        }
-    }
+
 
 }

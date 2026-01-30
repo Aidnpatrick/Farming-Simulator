@@ -5,7 +5,7 @@ public class TileScript : MonoBehaviour
 {
     public bool isFull = false;
     public bool isFertile;
-
+    public int tileID;
     void Update()
     {
         if(transform.childCount == 0) isFull = false;

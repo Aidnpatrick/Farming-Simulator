@@ -184,11 +184,14 @@ public class CameraScript : MonoBehaviour
                         return;
                     }
                 }
-                Destroy(child.gameObject);
-                tileScript.isFull = false;
-                if(child.name.Contains("Tree"))
-                    invScript.AddStock("Wood", 1, 2);
-                invScript.materials++;
+                if(!child.name.Contains("Water"))
+                {
+                    Destroy(child.gameObject);
+                    tileScript.isFull = false;
+                    if(child.name.Contains("Tree"))
+                        invScript.AddStock("Wood", 1, 2);
+                    invScript.materials++;                    
+                }
             }
 
             if (keyboard.eKey.wasPressedThisFrame)

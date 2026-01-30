@@ -8,6 +8,8 @@ TagManager:
   - Tile
   - Tree
   - Weed
+  - Bullet
+  - Animal
   layers:
   - Default
   - TransparentFX

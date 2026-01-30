@@ -20,7 +20,7 @@ public class PlayerScript : MonoBehaviour
     public float health = 10;
     public Vector3 startinglocation = new Vector3(20, 30, 1);
 
-    void Awake()
+    void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         moveSpeed = baseMoveSpeed;
