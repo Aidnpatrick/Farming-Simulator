@@ -7,13 +7,16 @@ public class EnemyScript : NPC
 
     void Start()
     {
+        speed = 1.5f;
         gameControlScript = GameObject.Find("GameControl").GetComponent<GameControlScript>();
         player = GameObject.Find("Player");
         movingCooldown = 0f;
         attackingCooldown = 0f;
+        rb = GetComponent<Rigidbody2D>();
+
     }
 
-    void Update()
+    void FixedUpdate()
     {
         movingCooldown -= Time.deltaTime;
         attackingCooldown -= Time.deltaTime;
@@ -44,22 +47,16 @@ public class EnemyScript : NPC
                 MoveTowards(targetCrop.transform.position);
             else if(targetAnimal != null)
                 MoveTowards(targetAnimal.transform.position);
-            /*
-            if(targetCrop == null) 
-                MoveTowards(lastKnownLocation);
-            else if(targetCrop == null)
-                MoveTowards(targetCrop.transform.position);
-            else if(targetAnimal != null)
-                MoveTowards(targetAnimal.transform.position);
-            */
         }
 
 
-        if(gameControlScript.isDay)
-        {
-            health -= 0.5f;
+        if(gameControlScript.isDay) health -= 1.5f;
+        if(health <= 0) {
+            gameControlScript.Blood(1, gameObject);
+            Destroy(gameObject);
         }
-        
+        rb = GetComponent<Rigidbody2D>();
+
     }
 
 
@@ -73,7 +70,7 @@ public class EnemyScript : NPC
                 if (ps != null)
                 {
                     ps.health -= 10f;
-                    attackingCooldown = 3f;
+                    attackingCooldown = 2f;
                 }
             }
         }

@@ -10,6 +10,8 @@ TagManager:
   - Weed
   - Bullet
   - Animal
+  - Enemy
+  - Torch
   layers:
   - Default
   - TransparentFX

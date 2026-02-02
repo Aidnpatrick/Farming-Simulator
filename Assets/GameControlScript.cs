@@ -49,6 +49,7 @@ public class GameControlScript : MonoBehaviour
     public StandScript standScript;
     public GameObject menuCanva;
     public GameObject buyStand, sellStand;
+    public GameObject darkness;
     public GameObject weedPrefab;
     public GameObject treePrefab;
     public GameObject zombiePrefab;
@@ -56,6 +57,7 @@ public class GameControlScript : MonoBehaviour
     public GameObject bloodPrefab;
     public GameObject[] tiles;
     public GameObject[] animals;
+    public GameObject[] enemies;
     private string[] treeTypes = { "Tree4" };
     private string[] bloodSprites = {"Blood1", "Blood2", "Blood3"};
     public bool isDay = true;
@@ -123,7 +125,12 @@ public class GameControlScript : MonoBehaviour
         }
 
         animals = GameObject.FindGameObjectsWithTag("Animal");
+        enemies = GameObject.FindGameObjectsWithTag("Enemy");
         
+        darkness.SetActive(!isDay);
+
+        foreach(GameObject t in GameObject.FindGameObjectsWithTag("Torch"))
+            t.transform.GetChild(0).gameObject.SetActive(!isDay);
     }
 
 /*
@@ -235,16 +242,29 @@ public class GameControlScript : MonoBehaviour
         }
         
     }
-    IEnumerator Zombies()
+    IEnumerator ZombiesAndSheep()
     {
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < 15; i++)
         {
             Vector3 randomPosition = new Vector3(
-                Random.Range(0,30),
-                Random.Range(0,30),
+                Random.Range(2,30),
+                Random.Range(2,30),
                 1
             );
-            Instantiate(zombiePrefab, randomPosition, Quaternion.identity);
+            if(isDay && animals.Length < 10) Instantiate(animalPrefab, randomPosition, Quaternion.identity);
+            else if(!isDay && enemies.Length < 5) 
+            {
+                GameObject zombieClone = Instantiate(zombiePrefab, randomPosition, Quaternion.identity);
+                foreach(GameObject t in GameObject.FindGameObjectsWithTag("Torches"))
+                {
+                    if(Vector3.Distance(zombieClone.transform.position, t.transform.position) < 10)
+                    {
+                        Destroy(zombieClone);
+                        break;
+                    }
+                }
+            }
+
             yield return new WaitForSeconds(5f);
         }
     }
@@ -259,7 +279,6 @@ public class GameControlScript : MonoBehaviour
                 1
             );
             GameObject bloodClone = Instantiate(bloodPrefab, target.transform.position + randomPosition, Quaternion.identity);
-            Debug.Log(bloodSprites[Random.Range(0, bloodSprites.Length)]);
             bloodClone.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/" + bloodSprites[Random.Range(0, bloodSprites.Length)]);
             Destroy(bloodClone, 20);
         }
@@ -268,10 +287,9 @@ public class GameControlScript : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(10f);
+            yield return new WaitForSeconds(60f);
             isDay = !isDay;
-            if (!isDay){}
-                //StartCoroutine(Zombies());
+            StartCoroutine(ZombiesAndSheep());
         }
     }
 }

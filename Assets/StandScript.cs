@@ -29,6 +29,7 @@ public class StandScript : MonoBehaviour
     public GameObject imgGUI, sellImgGUI;
     public GameObject standGUI;
     public GameObject headingStandGUI;
+    public GameObject TextPrefab;
     private InventoryScript inventoryScript;
 
     public bool isActive = false, isBuying = true;
@@ -48,6 +49,7 @@ public class StandScript : MonoBehaviour
         items.Add(new Item("FencePlacer", 5, "A simple building block. Good for defense."));
         items.Add(new Item("Materials", 2, "For the currency for placing and building things."));
         items.Add(new Item("TakeDown", 20, "Its a light rifle that is good for hunting."));
+        items.Add(new Item("TorchPlacer", 3, "It's a cheap light source. Monsters can't spawn on it."));
         standGUI.SetActive(false);
         headingStandGUI.SetActive(false);
         transform.position += new Vector3(1,0,0);
@@ -155,6 +157,8 @@ public class StandScript : MonoBehaviour
         foreach (Transform child in standGUI.transform)
             Destroy(child.gameObject);
         int index = 1;
+        GameObject InstructionText = Instantiate(TextPrefab, standGUI.transform, false);
+        InstructionText.GetComponent<TMP_Text>().text = "Press number on your keyboard that matches the item's number to get what you want.";
         foreach (Item item in items)
         {
             GameObject clone = Instantiate(imgGUI, standGUI.transform, false);
@@ -187,6 +191,8 @@ public class StandScript : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+        GameObject InstructionText = Instantiate(TextPrefab, standGUI.transform, false);
+        InstructionText.GetComponent<TMP_Text>().text = "This button sells everything you have in your stock.";
         GameObject clone = Instantiate(sellImgGUI, standGUI.transform, false);
         Button sellButton = clone.transform.GetComponentInChildren<Button>();
         sellButton.onClick.RemoveAllListeners();

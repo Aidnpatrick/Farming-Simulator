@@ -23,7 +23,7 @@ public class CameraScript : MonoBehaviour
 
     public StandScript currentStandScript = null;
 
-    public GameObject fencePrefab, chestPrefab, dirtPrefab, plantPrefab, gravelPrefab;
+    public GameObject fencePrefab, chestPrefab, dirtPrefab, plantPrefab, gravelPrefab, torchPrefab;
     
     public bool suppressInteraction = false, menuInteraction = false;
 
@@ -118,6 +118,13 @@ public class CameraScript : MonoBehaviour
                         Build(hit.collider.gameObject, chestPrefab, new Vector3(0,0,1), false);
                         invScript.materials -=20;                 
                     }
+                    
+                    if (currentItem == "TorchPlacer")
+                    {
+                        Build(hit.collider.gameObject, torchPrefab, new Vector3(0,0,1), false);
+                        invScript.materials -= 5;
+                    }
+
                     if(currentItem == "Shovel")
                     {
                         Build(hit.collider.gameObject, gravelPrefab, new Vector3(0,0,1), false);

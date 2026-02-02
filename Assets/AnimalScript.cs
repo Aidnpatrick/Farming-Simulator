@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class AnimalScript : NPC
@@ -10,9 +11,10 @@ public class AnimalScript : NPC
         gameControlScript = GameObject.Find("GameControl").GetComponent<GameControlScript>();
         invScript = GameObject.Find("Inventory").GetComponent<InventoryScript>();
         player = GameObject.Find("Player");
-        movingCooldown = 0f;
+        movingCooldown = 0f; 
+        rb = GetComponent<Rigidbody2D>();
     }
-    void Update()
+    void FixedUpdate()
     {
         movingCooldown -= Time.deltaTime;
         attackingCooldown -= Time.deltaTime;
@@ -22,6 +24,7 @@ public class AnimalScript : NPC
             Vector3.Distance(player.transform.position, transform.position);
 
         canSeePlayer = distanceFromPlayer <= visionRange;
+
         if (canSeePlayer && invScript.inventory.Count > 0 && invScript.inventory[invScript.equippedItem - 1] == "Seeds")
         {
             lastKnownLocation = player.transform.position;
@@ -41,9 +44,11 @@ public class AnimalScript : NPC
             else if(eatingCooldown <= 0)
                 MoveTowards(targetCrop.transform.position);
         }
+        rb = GetComponent<Rigidbody2D>();
+
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.CompareTag("Tile"))
         {
@@ -69,6 +74,17 @@ public class AnimalScript : NPC
             if (health <= 0f)
             {
                 Destroy(gameObject);
+            }
+        }
+        if(collision.CompareTag("Enemy"))
+        {
+            EnemyScript es = collision.GetComponent<EnemyScript>();
+            if(es.attackingCooldown <= 0)
+            {
+                gameControlScript.Blood(1, gameObject);
+                health -= 20;
+                es.attackingCooldown = 2;
+                if(health <= 0) Destroy(gameObject);
             }
         }
     }

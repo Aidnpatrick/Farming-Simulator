@@ -77,9 +77,8 @@ public class InventoryScript : MonoBehaviour
         if (keyboard.qKey.wasPressedThisFrame)
             DropEquippedItem();
 
-        materialText.text = "Materials: " + materials + "\nCoins: " + coins + "\n";
-        foreach (Stock s in stocks)
-            materialText.text += s.itemName + " " + s.quantity + "\n";
+        materialText.text = "[Still in development]\nMaterials: " + materials + "\nCoins: " + coins + "\n";
+
         int slotIndex = equippedItem - 1;
 
         if (slotIndex >= 0 && slotIndex < gameCanvas.transform.childCount)

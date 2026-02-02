@@ -4,23 +4,27 @@ using UnityEngine;
 public class NPC : MonoBehaviour
 {
     protected float speed = 1.2f;
-    protected float health = 100f;
+    public float health = 100f;
     protected float visionRange = 5f;
 
     protected Vector3 lastKnownLocation;
     protected bool canSeePlayer;
 
     protected float movingCooldown;
-    protected float attackingCooldown;
+    public float attackingCooldown;
     protected GameControlScript gameControlScript;
     protected GameObject targetCrop = null;
+    protected Rigidbody2D rb;
 
     void Start()
     {
 
         gameControlScript = GameObject.Find("GameControl").GetComponent<GameControlScript>();
+        rb = GetComponent<Rigidbody2D>();
+        if(rb == null) Debug.Log("rb is null");
         movingCooldown = 0f;
         attackingCooldown = 0f;
+
     }
 
     public virtual GameObject FindTargetCrop(GameObject[] tiles, bool needsWeed = false)
@@ -39,7 +43,6 @@ public class NPC : MonoBehaviour
                 return targetCrop;
             }
         }
-        Debug.Log("Cant Find tile");
         return null;
     }
 
@@ -50,6 +53,7 @@ public class NPC : MonoBehaviour
             TileScript ts = tile.GetComponent<TileScript>();
 
             if(!ts.isFull) continue;
+            if(tile.transform.childCount == 0) continue;
             if(!tile.transform.GetChild(0).name.Contains("Weed")) continue;
 
             if (Vector3.Distance(tile.transform.position, transform.position) < 4f)
@@ -58,7 +62,6 @@ public class NPC : MonoBehaviour
                 return targetCrop;
             }
         }
-        Debug.Log("Cant Find tile");
         return null;
     }
     public virtual GameObject FindTargetAnimal(GameObject[] animals)
@@ -71,22 +74,28 @@ public class NPC : MonoBehaviour
                 return targetCrop;
             }
         }
-        Debug.Log("Cant Find tile");
         return null;
     }
 
 
     public virtual void MoveTowards(Vector3 target)
     {
-        Vector3 direction = target - transform.position;
-        direction.z = 0f;
+        Vector2 direction = (target - transform.position);
+        direction.y = direction.y;
+        direction.x = direction.x;
 
-        if (direction.magnitude < 0.1f) return;
+        if (direction.magnitude < 0.1f)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        direction.Normalize();
 
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        rb.MoveRotation(angle);
 
-        transform.position += direction.normalized * speed * Time.deltaTime;
+        rb.MovePosition(rb.position + direction * speed * Time.fixedDeltaTime);
     }
 
     public Vector3 FindRandomPos()
