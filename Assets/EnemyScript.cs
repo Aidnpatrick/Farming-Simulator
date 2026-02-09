@@ -4,7 +4,9 @@ public class EnemyScript : NPC
 {
     private GameObject player;
     public GameObject targetAnimal = null;
-
+    public float animalSoundCooldown = 0f;
+    public AudioSource audioSource;
+    public AudioClip zombieNoise;
     void Start()
     {
         speed = 1.5f;
@@ -56,7 +58,11 @@ public class EnemyScript : NPC
             Destroy(gameObject);
         }
         rb = GetComponent<Rigidbody2D>();
-
+        if(animalSoundCooldown <= 0)
+        {
+            audioSource.PlayOneShot(zombieNoise);
+            animalSoundCooldown = Random.Range(0,25);
+        }
     }
 
 

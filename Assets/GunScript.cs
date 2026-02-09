@@ -8,6 +8,8 @@ public class GunScript : MonoBehaviour
     private float bulletSpeed = 20f;
     public float r = 1f;
     public float coolDown;
+    public AudioSource audioSource;
+    public AudioClip gunShot;
     void Start()
     {
         invScript = GameObject.Find("Inventory").GetComponent<InventoryScript>();
@@ -25,6 +27,7 @@ public class GunScript : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
         if (Input.GetMouseButtonDown(0) && invScript.ammo > 0 && coolDown <= 0)
         {
+            audioSource.PlayOneShot(gunShot);
             invScript.ammo--;
 
             Transform barrel = transform.GetChild(0);
@@ -38,7 +41,7 @@ public class GunScript : MonoBehaviour
             }
             r = Mathf.Clamp(r + 25, 0, 55);
             Destroy(bp, 2f);
-            coolDown = 0.5f;
+            coolDown = 0.25f;
         }
     }
 }

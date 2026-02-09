@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Farming-Simulator.sln"
+    "dotnet.defaultSolution": "Farming-Simulator.slnx"
 }

@@ -25,7 +25,7 @@ public class TreeScript : MonoBehaviour
     }
     void Update()
     {
-        if(Random.Range(0f,100f) < 0.2f && gameObject.transform.childCount < 4)
+        if(Random.Range(0f,100f) < 0.15f && gameObject.transform.childCount < 4)
         {
             Vector3 randomOffSet = new Vector3(Random.Range(-0.1f,0.1f), Random.Range(-0.1f,0.1f), 0);
             if(transform.GetComponentInParent<TileScript>().isFertile)

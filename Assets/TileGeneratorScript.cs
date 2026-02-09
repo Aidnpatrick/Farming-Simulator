@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class TileGeneratorScript : MonoBehaviour
@@ -6,13 +7,14 @@ public class TileGeneratorScript : MonoBehaviour
     public CameraScript cameraScript;
     public GameObject tilePrefab;
     public GameObject waterPrefab;
+    public int riverThickness = 1;
+    public int gridWidth = 20;
 
     void Start()
     {
         int width = 40;
         int height = 40;
         int edgeThickness = 3;
-        int waterDepth = 3;
 
         Sprite sandSprite = Resources.Load<Sprite>("Images/Sand");
         int index = 1;
@@ -26,9 +28,11 @@ public class TileGeneratorScript : MonoBehaviour
                 tile.name = "Tile" + index;
 
                 TileScript ts = tile.GetComponent<TileScript>();
+                
                 SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
 
                 ts.tileID = index;
+                ts.isWater = false;
 
                 bool isEdge =
                     x < edgeThickness ||
@@ -49,21 +53,53 @@ public class TileGeneratorScript : MonoBehaviour
                 index++;
             }
         }
+        StartCoroutine(waterTiles());
+    }
+    //007AEC = Water Color
+    //
+    IEnumerator waterTiles()
+    {
+        yield return new WaitForSeconds(0.1f);
 
         foreach (GameObject tile in gameControlScript.tiles)
         {
-            
-            Vector2 pos = tile.transform.position;
             TileScript ts = tile.GetComponent<TileScript>();
+            if (ts == null) continue;
 
-            if (pos.y < waterDepth)
+            int x = ts.tileID % gridWidth;
+            int y = ts.tileID / gridWidth + 20;
+
+            float noise = Mathf.PerlinNoise(y * 0.08f, 0f);
+            int riverX = Mathf.RoundToInt(noise * 10f) + (gridWidth / 2);
+
+            int thickness =
+                riverThickness + Mathf.RoundToInt(
+                    Mathf.PerlinNoise(0f, y * 0.12f) * 0.5f
+                );
+
+            if (Mathf.Abs(x - riverX) <= thickness)
             {
-                Debug.Log("asdsad");
-                cameraScript.Build(tile, waterPrefab, new Vector3(0, 0, 1), true);
-                ts.isFertile = false;
+                if (ts.isFull)
+                {
+                    Destroy(tile.transform.GetChild(0).gameObject);
+                    ts.isFull = false;
+                }
+
+                cameraScript.Build(
+                    tile,
+                    waterPrefab,
+                    new Vector3(0, 0, 1),
+                    true
+                );
+
+                ts.isWater = true;
+                ts.isFull = true;
             }
         }
+
+        Debug.Log("Foreach works");
     }
+
 }
 
 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class DirtScript : MonoBehaviour
 {
@@ -8,17 +9,47 @@ public class DirtScript : MonoBehaviour
     public string currentPlant = "";
     public float growth = 0;
     private float growthStop = 35f;
+    private int OddsOfGrowing = 10;
 
     private Transform plantChild;
     private SpriteRenderer spriteRenderer;
+    private GameControlScript gameControlScript;
     private float baseY;
+    void Start()
+    {
+        gameControlScript = GameObject.Find("GameControl").GetComponent<GameControlScript>();
+    }
     void Update()
     {
         if (!isFull || plantChild == null)
             return;
+        if(Random.Range(0, OddsOfGrowing + 1) < 0.5)
+            GrowPlant();
+        
 
-        GrowPlant();
+        GameObject tile = transform.parent.gameObject;
+        Vector3 tilePos = tile.transform.position;
+        bool isGoodDirt = false;
+        foreach(GameObject otherTile in gameControlScript.tiles)
+        {
+            if (otherTile == tile) 
+                continue;
+
+            TreeScript tree = otherTile.GetComponentInChildren<TreeScript>();
+            if (tree == null) 
+                continue;
+
+            if(Vector3.Distance(tilePos, tree.transform.position) < 3)
+            {
+                OddsOfGrowing = 7;
+                isGoodDirt = true;
+                break;
+            }
+        }
+        if(!isGoodDirt) OddsOfGrowing = 10;
+
     }
+    
     void GrowPlant()
     {
         spriteRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
@@ -36,6 +67,7 @@ public class DirtScript : MonoBehaviour
         }
 
         float growAmount = 0.001f;
+        
 
         Vector3 scale = plantChild.localScale;
         scale.y = Mathf.Clamp(scale.y + growAmount, 0f, 1f);
@@ -50,6 +82,7 @@ public class DirtScript : MonoBehaviour
         );
         
         growth+=0.1f;
+        
     }
 
     public void NewPlant()

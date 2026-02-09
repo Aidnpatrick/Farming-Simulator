@@ -6,11 +6,16 @@ public class AnimalScript : NPC
     private InventoryScript invScript;
     private GameObject player;
     public float eatingCooldown = 0f;
+    public float animalSoundCooldown = 0f;
+    public AudioSource audioSource;
+    public AudioClip zombieNoise;
+
     void Start()
     {
         gameControlScript = GameObject.Find("GameControl").GetComponent<GameControlScript>();
         invScript = GameObject.Find("Inventory").GetComponent<InventoryScript>();
         player = GameObject.Find("Player");
+
         movingCooldown = 0f; 
         rb = GetComponent<Rigidbody2D>();
     }
@@ -19,6 +24,7 @@ public class AnimalScript : NPC
         movingCooldown -= Time.deltaTime;
         attackingCooldown -= Time.deltaTime;
         eatingCooldown -= Time.deltaTime;
+        animalSoundCooldown -= Time.deltaTime;
 
         float distanceFromPlayer =
             Vector3.Distance(player.transform.position, transform.position);
@@ -45,7 +51,13 @@ public class AnimalScript : NPC
                 MoveTowards(targetCrop.transform.position);
         }
         rb = GetComponent<Rigidbody2D>();
-
+        
+        if (health <= 0f) Destroy(gameObject);
+        if(animalSoundCooldown <= 0)
+        {
+            audioSource.PlayOneShot(zombieNoise);
+            animalSoundCooldown = Random.Range(0, 25);
+        }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
@@ -73,6 +85,7 @@ public class AnimalScript : NPC
 
             if (health <= 0f)
             {
+                invScript.AddStock("Sheep Meat", 1, 15);
                 Destroy(gameObject);
             }
         }
@@ -87,5 +100,24 @@ public class AnimalScript : NPC
                 if(health <= 0) Destroy(gameObject);
             }
         }
+        /*
+        if (collision.CompareTag("Tile"))
+        {
+            if (collision.transform.childCount > 0 &&
+                collision.transform.GetChild(0).name.Contains("Gravel"))
+            {
+                moveSpeed = 8f;
+            }
+            if (collision.transform.childCount > 0 &&
+                collision.transform.GetChild(0).name.Contains("Water"))
+            {
+                if(collision.transform.GetChild(0).childCount > 0)
+                    moveSpeed = 5f;
+                else
+                    moveSpeed = 1.5f;
+            }
+            
+        }
+        */
     }
 }

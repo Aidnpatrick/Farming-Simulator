@@ -35,6 +35,7 @@ public class StandScript : MonoBehaviour
     public bool isActive = false, isBuying = true;
 
     private List<Item> items = new List<Item>();
+    private List<Item> wanderingTraderGunitems = new List<Item>();
 
     void Start()
     {
@@ -42,14 +43,19 @@ public class StandScript : MonoBehaviour
         player = GameObject.Find("Player");
         
 
-        items.Add(new Item("Hoe", 6, "It creates dirt which lets you plant seeds."));
-        items.Add(new Item("Shovel", 8, "It makes Gravel Path which makes player faster."));
-        items.Add(new Item("ChestPlacer", 3, "Lets you store multiple items easily."));
-        items.Add(new Item("Seeds", 2, "Place seeds into the dirt and sell the plant for profit."));
-        items.Add(new Item("FencePlacer", 5, "A simple building block. Good for defense."));
+        items.Add(new Item("Hoe", 10, "It creates dirt which lets you plant seeds."));
+        items.Add(new Item("Shovel", 12, "It makes Gravel Path which makes player faster."));
+        items.Add(new Item("ChestPlacer", 10, "Lets you store multiple items easily."));
+        items.Add(new Item("Seeds", 8, "Place seeds into the dirt and sell the plant for profit."));
+        items.Add(new Item("FencePlacer", 8, "A simple building block. Good for defense."));
         items.Add(new Item("Materials", 2, "For the currency for placing and building things."));
         items.Add(new Item("TakeDown", 20, "Its a light rifle that is good for hunting."));
         items.Add(new Item("TorchPlacer", 3, "It's a cheap light source. Monsters can't spawn on it."));
+        items.Add(new Item("Ammo", 10, "A box of 10 rounds of ammo."));
+        items.Add(new Item("BridgePlacer", 20, "Bridges help you go across water."));
+
+
+        
         standGUI.SetActive(false);
         headingStandGUI.SetActive(false);
         transform.position += new Vector3(1,0,0);
@@ -85,6 +91,8 @@ public class StandScript : MonoBehaviour
             BuyItem(7);
         if (keyboard.digit9Key.wasPressedThisFrame)
             BuyItem(8);
+        if (keyboard.digit0Key.wasPressedThisFrame)
+            BuyItem(9);
     }
 
     public void SetActive(bool value)
@@ -127,8 +135,19 @@ public class StandScript : MonoBehaviour
             inventoryScript.coins -= numcoins;
             return;
         }
+        /*
+        if(itemName == "Ammo") {
+            inventoryScript.ammo +=10;
+            inventoryScript.coins -= numcoins;
+            return;
+        }
+        */
+
         GameObject lootPrefab = Resources.Load<GameObject>(itemName + "Loot");
-        if (lootPrefab == null) return;
+        if (lootPrefab == null) {
+            Debug.Log("This item doesn't exist: " + lootPrefab.name);
+            return;
+        }
         GameObject dropped = Instantiate(
             lootPrefab,
             transform.position + new Vector3(3,0,0),
@@ -142,6 +161,7 @@ public class StandScript : MonoBehaviour
 
     public void SellItem()
     {
+        
         int sum = 0;
         foreach(Stock i in inventoryScript.stocks)
         {
@@ -158,7 +178,7 @@ public class StandScript : MonoBehaviour
             Destroy(child.gameObject);
         int index = 1;
         GameObject InstructionText = Instantiate(TextPrefab, standGUI.transform, false);
-        InstructionText.GetComponent<TMP_Text>().text = "Press number on your keyboard that matches the item's number to get what you want.";
+        InstructionText.GetComponent<TMP_Text>().text = "Press number on your keyboard that matches the item's number to get what you want. Press 'E' to close the shop." ;
         foreach (Item item in items)
         {
             GameObject clone = Instantiate(imgGUI, standGUI.transform, false);
@@ -168,17 +188,9 @@ public class StandScript : MonoBehaviour
             Image img = clone.transform.GetChild(1).GetComponent<Image>();
             img.sprite = Resources.Load<Sprite>("Images/" + item.name);
 
-            clone.transform.GetChild(2).GetComponent<TMP_Text>().text = item.price.ToString();
-
-            Button buyButton = clone.GetComponentInChildren<Button>();
-            buyButton.onClick.RemoveAllListeners();
-
-            Item capturedItem = item;
-            buyButton.onClick.AddListener(() => BuyItem(capturedItem.price));
-
-            buyButton.navigation = new Navigation { mode = Navigation.Mode.None };
+            clone.transform.GetChild(2).GetComponent<TMP_Text>().text = "$" + item.price.ToString();
             index++;
-
+            if(index == 10) index = 0;
         }
         headingStandGUI.transform.GetChild(0).GetComponent<TMP_Text>().text = "Walstand";    
         headingStandGUI.GetComponent<Image>().color = new Color32(0, 83, 226, 255);
@@ -192,7 +204,7 @@ public class StandScript : MonoBehaviour
             Destroy(child.gameObject);
         }
         GameObject InstructionText = Instantiate(TextPrefab, standGUI.transform, false);
-        InstructionText.GetComponent<TMP_Text>().text = "This button sells everything you have in your stock.";
+        InstructionText.GetComponent<TMP_Text>().text = "This button sells everything you have in your stock. Press 'E' to exit.";
         GameObject clone = Instantiate(sellImgGUI, standGUI.transform, false);
         Button sellButton = clone.transform.GetComponentInChildren<Button>();
         sellButton.onClick.RemoveAllListeners();

@@ -23,15 +23,18 @@ public class CameraScript : MonoBehaviour
 
     public StandScript currentStandScript = null;
 
-    public GameObject fencePrefab, chestPrefab, dirtPrefab, plantPrefab, gravelPrefab, torchPrefab;
-    
+    public GameObject fencePrefab, chestPrefab, dirtPrefab, plantPrefab, gravelPrefab, torchPrefab, bridgePrefab;
+    public AudioSource audioSource;
+    public AudioClip wood, harvest1;
+    public AudioClip harvestPlant, harvestBreak;
+    public AudioClip WeedS;
+    public AudioClip gravelS;
     public bool suppressInteraction = false, menuInteraction = false;
 
     void Start()
     {
         
         transform.position += new Vector3(25,30,0);
-
         menuInteraction = true;
     }
     public void StartGame()
@@ -111,12 +114,15 @@ public class CameraScript : MonoBehaviour
                     {
                         Build(hit.collider.gameObject, fencePrefab, new Vector3(0,0,1), false);
                         invScript.materials -= 2;
+                        audioSource.PlayOneShot(wood);
                     }
 
                     if (currentItem == "ChestPlacer")
                     {
                         Build(hit.collider.gameObject, chestPrefab, new Vector3(0,0,1), false);
-                        invScript.materials -=20;                 
+                        invScript.materials -=20;
+                        audioSource.PlayOneShot(wood);
+           
                     }
                     
                     if (currentItem == "TorchPlacer")
@@ -129,26 +135,41 @@ public class CameraScript : MonoBehaviour
                     {
                         Build(hit.collider.gameObject, gravelPrefab, new Vector3(0,0,1), false);
                         invScript.materials -= 10;
+                        audioSource.PlayOneShot(gravelS);
                     }
                     
                     if (currentItem == "Hoe" && tileScript.isFertile)
                     {
                         Build(hit.collider.gameObject, dirtPrefab, new Vector3(0,0,1), false);
                         invScript.materials -= 1;
+                        audioSource.PlayOneShot(harvest1);
+                    }
+                    if(currentItem == "Hoe" && tileScript.isWater)
+                    {
+                        
                     }
                 }
 
                 if (hit.collider.transform.childCount > 0)
                 {
                     Transform child = hit.collider.transform.GetChild(0);
-                    DirtScript ds = child.GetComponent<DirtScript>();
-                    if (ds == null) return;
-
-                    if (currentItem.Contains("Seed") && child.name.Contains("Dirt") && !ds.isFull)
-                    {
-                        Build(child.gameObject, plantPrefab, new Vector3(0,0,1), false);
-                        ds.isFull = true;
-                        ds.NewPlant();
+                    DirtScript ds;
+                    if(child.name.Contains("Dirt")) {
+                        ds = child.GetComponent<DirtScript>();
+                        if (currentItem.Contains("Seed") && child.name.Contains("Dirt") && !ds.isFull)
+                        {
+                            
+                            audioSource.PlayOneShot(harvestPlant);
+                            Build(child.gameObject, plantPrefab, new Vector3(0,0,1), false);
+                            ds.isFull = true;
+                            ds.NewPlant();
+                        }
+                    }
+                    if(currentItem.Contains("Bridge") && child.name.Contains("Water") && child.childCount == 0) {
+                        Build(child.gameObject, bridgePrefab, new Vector3(0,0,1), false);
+                        invScript.materials -= 30;
+                        tileScript.toggleCollider(false, child.transform);
+                        audioSource.PlayOneShot(wood);
                     }
                 }
 
@@ -165,11 +186,19 @@ public class CameraScript : MonoBehaviour
                     DirtScript ds = child.GetComponent<DirtScript>();
                     ds.isFull = false;
 
+                    audioSource.PlayOneShot(harvestBreak);
                     invScript.materials++;
                     if (ds.isGrown)
                         invScript.AddStock("Wheat", 1, 2);
 
-
+                    return;
+                }
+                if(child.name.Contains("Water") && child.childCount > 0)
+                {
+                    audioSource.PlayOneShot(wood);
+                    Destroy(child.GetChild(0).gameObject);
+                    tileScript.toggleCollider(true, child.transform);
+                    invScript.materials++;
                     return;
                 }
 
@@ -187,7 +216,10 @@ public class CameraScript : MonoBehaviour
                         else if(apple.name.Contains("Coconut"))
                             invScript.AddStock("Coconut", 1, 1);
                         treeScript.apples.RemoveAt(treeScript.apples.Count - 1);
+                        audioSource.PlayOneShot(wood);
+
                         Destroy(apple.gameObject);
+                        
                         return;
                     }
                 }
@@ -196,7 +228,18 @@ public class CameraScript : MonoBehaviour
                     Destroy(child.gameObject);
                     tileScript.isFull = false;
                     if(child.name.Contains("Tree"))
+                    {
                         invScript.AddStock("Wood", 1, 2);
+                    }
+                    if(child.name.Contains("Tree") || child.name.Contains("Chest") || child.name.Contains("Fence") || child.name.Contains("Bridge") || child.name.Contains("Torch"))
+                        audioSource.PlayOneShot(wood);
+                    if(child.name.Contains("Gravel"))
+                        audioSource.PlayOneShot(gravelS);
+                    if(child.name.Contains("Dirt"))
+                        audioSource.PlayOneShot(harvest1);
+                    if(child.name.Contains("Weed"))
+                        audioSource.PlayOneShot(WeedS);
+                    
                     invScript.materials++;                    
                 }
             }
@@ -211,6 +254,12 @@ public class CameraScript : MonoBehaviour
             if(hit.collider.name.Contains("Fence") || hit.collider.name.Contains("Weed") || hit.collider.name.Contains("Tree"))
             {
                 //CursorText("Break",hit.collider.name);
+                if(hit.collider.name.Contains("Fence"))
+                    audioSource.PlayOneShot(wood);
+                if(hit.collider.name.Contains("Weed"))
+                    audioSource.PlayOneShot(WeedS);
+                if(hit.collider.name.Contains("Tree"))
+                    audioSource.PlayOneShot(wood);
 
                 Transform parent = hit.collider.transform.parent;
                 TileScript ts = parent.GetComponent<TileScript>();
@@ -229,6 +278,13 @@ public class CameraScript : MonoBehaviour
                 invScript.AddStock("Apple", 1, 1);
 
                 Destroy(hit.collider.gameObject);
+            }
+
+            if(hit.collider.name.Contains("Animal") || hit.collider.name.Contains("Enemy"))
+            {
+                Debug.Log("Hit sheep");
+                NPC NPCScript = hit.collider.transform.GetComponent<NPC>();
+                NPCScript.health -= 10;
             }
         }
         if (hit.collider.name.Contains("Stand"))
@@ -251,6 +307,17 @@ public class CameraScript : MonoBehaviour
                 currentStandScript = standScript;
                 suppressInteraction = true;
                 EventSystem.current.SetSelectedGameObject(null);
+            }
+        }
+        
+        if(hit.collider.name.Contains("Animal") || hit.collider.name.Contains("Enemy"))
+        {
+            Debug.Log("Hit sheep");
+            if(Input.GetMouseButtonDown(0))
+            {
+                Debug.Log("Hit sheep");
+                NPC NPCScript = hit.collider.transform.GetComponent<NPC>();
+                NPCScript.health -= 10;
             }
         }
 

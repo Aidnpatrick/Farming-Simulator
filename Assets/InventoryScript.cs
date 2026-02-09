@@ -36,10 +36,9 @@ public class InventoryScript : MonoBehaviour
     public List<Stock> stocks = new List<Stock>();
 
     public int equippedItem = 1;
-    public int ammo = 10000000;
+    public int ammo = 10;
     public int materials = 1000;
     public int coins = 1000;
-
     private int maxInventorySize = 5;
 
     void Start()
@@ -77,7 +76,7 @@ public class InventoryScript : MonoBehaviour
         if (keyboard.qKey.wasPressedThisFrame)
             DropEquippedItem();
 
-        materialText.text = "[Still in development]\nMaterials: " + materials + "\nCoins: " + coins + "\n";
+        materialText.text = "[Still in development]\nMaterials: " + materials + "\nAmmo: " + ammo + "\n$" + coins;
 
         int slotIndex = equippedItem - 1;
 
@@ -156,9 +155,14 @@ public class InventoryScript : MonoBehaviour
 
     public void AddItem(string itemName)
     {
+        Debug.Log(itemName);
+        if (itemName.Contains("Ammo"))
+        {
+            ammo += 10;
+            return;        
+        }
         if (inventory.Count >= maxInventorySize) return;
         if (Resources.Load<GameObject>(itemName) == null) return;
-
         inventory.Add(itemName);
         equippedItem = Mathf.Clamp(equippedItem, 1, inventory.Count);
         UpdateInventory();

@@ -45,7 +45,7 @@ public class GameControlScript : MonoBehaviour
     public CameraScript cameraScript;
     public InventoryScript inventoryScript;
     public GameObject gameCanvas;
-    public GameObject gameInstructions;
+    public GameObject gameInstructions, tutorial;
     public StandScript standScript;
     public GameObject menuCanva;
     public GameObject buyStand, sellStand;
@@ -55,13 +55,17 @@ public class GameControlScript : MonoBehaviour
     public GameObject zombiePrefab;
     public GameObject animalPrefab;
     public GameObject bloodPrefab;
+    public GameObject wavePrefab;
     public GameObject[] tiles;
     public GameObject[] animals;
     public GameObject[] enemies;
     private string[] treeTypes = { "Tree4" };
     private string[] bloodSprites = {"Blood1", "Blood2", "Blood3"};
     public bool isDay = true;
-    public bool gameInstructionsOpen = false;
+    public bool gameInstructionsOpen = false, tutorialOpen = false;
+    public AudioSource audioSource;
+    public AudioClip pop;
+    
 
     public void Start()
     {
@@ -77,9 +81,19 @@ public class GameControlScript : MonoBehaviour
         gameInstructionsOpen = !gameInstructionsOpen;
         gameInstructions.SetActive(gameInstructionsOpen);
         gameInstructions.transform.SetAsLastSibling();
+        audioSource.PlayOneShot(pop);
+
+    }
+    public void ToggleTutorial()
+    {
+        tutorialOpen = !tutorialOpen;
+        tutorial.SetActive(tutorialOpen);
+        tutorial.transform.SetAsLastSibling();
     }
     public void StartGame()
     {
+        audioSource.PlayOneShot(pop);
+
         cameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
         standScript = GameObject.Find("Stand").GetComponent<StandScript>();
         inventoryScript = FindObjectOfType<InventoryScript>();
@@ -99,6 +113,7 @@ public class GameControlScript : MonoBehaviour
             SpawnWorld();
         */
         SpawnWorld();
+        StartCoroutine(StartWaves());
     }
 
     void Update()
@@ -117,11 +132,11 @@ public class GameControlScript : MonoBehaviour
 
         if(Keyboard.current.oKey.wasPressedThisFrame)
         {
-            Instantiate(zombiePrefab, new Vector3(0,0,1), Quaternion.identity);
+            Instantiate(zombiePrefab, new Vector3(1,1,1), Quaternion.identity);
         }
         if(Keyboard.current.pKey.wasPressedThisFrame)
         {
-            Instantiate(animalPrefab, new Vector3(0,0,1), Quaternion.identity);
+            Instantiate(animalPrefab, new Vector3(1,1,1), Quaternion.identity);
         }
 
         animals = GameObject.FindGameObjectsWithTag("Animal");
@@ -242,6 +257,39 @@ public class GameControlScript : MonoBehaviour
         }
         
     }
+    IEnumerator StartWaves()
+    {
+        while (true)
+        {
+            Vector3 randomPosition = new Vector3(
+                Random.Range(-10f, 50f),
+                Random.Range(10f, 50f),
+                1f
+            );
+
+            GameObject waveClone = Instantiate(wavePrefab, randomPosition, Quaternion.identity);
+
+            float speed = Random.Range(1f, 3f);
+
+            StartCoroutine(MoveWave(waveClone, speed));
+
+            Destroy(waveClone, 2f);
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
+
+    IEnumerator MoveWave(GameObject wave, float speed)
+    {
+        float elapsed = 0f;
+        while (wave != null && elapsed < 2f) 
+        {
+            wave.transform.Translate(Vector3.left * speed * Time.deltaTime);
+            wave.transform.Translate(Vector3.up * (speed / 2f) * Time.deltaTime);
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+}
     IEnumerator ZombiesAndSheep()
     {
         for(int i = 0; i < 15; i++)
@@ -255,7 +303,7 @@ public class GameControlScript : MonoBehaviour
             else if(!isDay && enemies.Length < 5) 
             {
                 GameObject zombieClone = Instantiate(zombiePrefab, randomPosition, Quaternion.identity);
-                foreach(GameObject t in GameObject.FindGameObjectsWithTag("Torches"))
+                foreach(GameObject t in GameObject.FindGameObjectsWithTag("Torch"))
                 {
                     if(Vector3.Distance(zombieClone.transform.position, t.transform.position) < 10)
                     {
@@ -290,6 +338,8 @@ public class GameControlScript : MonoBehaviour
             yield return new WaitForSeconds(60f);
             isDay = !isDay;
             StartCoroutine(ZombiesAndSheep());
+            SpawnWorld();
+
         }
     }
 }

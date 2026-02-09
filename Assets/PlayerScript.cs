@@ -19,6 +19,8 @@ public class PlayerScript : MonoBehaviour
 
     public float health = 10;
     public Vector3 startinglocation = new Vector3(20, 30, 1);
+    public AudioSource audioSource;
+    public AudioClip collect;
 
     void Start()
     {
@@ -51,6 +53,7 @@ public class PlayerScript : MonoBehaviour
         {
             inventoryScript.AddItem(currentLoot);
             Destroy(currentLootObject);
+            audioSource.PlayOneShot(collect);
             canGrab = false;
         }
     }
@@ -76,6 +79,7 @@ public class PlayerScript : MonoBehaviour
             {
                 moveSpeed = 8f;
             }
+            
         }
     }
 
