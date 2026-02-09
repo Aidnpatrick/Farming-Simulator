@@ -299,8 +299,8 @@ public class GameControlScript : MonoBehaviour
                 Random.Range(2,30),
                 1
             );
-            if(isDay && animals.Length < 10) Instantiate(animalPrefab, randomPosition, Quaternion.identity);
-            else if(!isDay && enemies.Length < 5) 
+            if(isDay && animals.Length < 6) Instantiate(animalPrefab, randomPosition, Quaternion.identity);
+            else if(!isDay && enemies.Length < 4) 
             {
                 GameObject zombieClone = Instantiate(zombiePrefab, randomPosition, Quaternion.identity);
                 foreach(GameObject t in GameObject.FindGameObjectsWithTag("Torch"))
@@ -335,9 +335,9 @@ public class GameControlScript : MonoBehaviour
     {
         while (true)
         {
+            StartCoroutine(ZombiesAndSheep());
             yield return new WaitForSeconds(60f);
             isDay = !isDay;
-            StartCoroutine(ZombiesAndSheep());
             SpawnWorld();
 
         }

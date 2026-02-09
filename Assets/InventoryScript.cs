@@ -21,6 +21,7 @@ public class Stock
 public class InventoryScript : MonoBehaviour
 {
     public PlayerScript playerScript;
+    public CameraScript cameraScript;
     public GameObject gameCanvas;
     public GameObject healthContainer;
     public GameObject tabContainer;
@@ -69,8 +70,19 @@ public class InventoryScript : MonoBehaviour
             {
                 t.localPosition = Vector3.zero + new Vector3(0.5f,0,0);
                 t.localRotation = Quaternion.identity;
-                
+                if(inventory.Count > 0)
+                {
+                    if(inventory[equippedItem - 1].Contains("TakeDown"))
+                        cameraScript.canEdit = false;
+                    else
+                        cameraScript.canEdit = true;
+                }
+                else
+                    cameraScript.canEdit = true;
             }
+            else
+                cameraScript.canEdit = true;
+
         }
 
         if (keyboard.qKey.wasPressedThisFrame)
@@ -204,5 +216,6 @@ public class InventoryScript : MonoBehaviour
 
         UpdateInventory();
         UpdatePlayerChildren();
+        cameraScript.canEdit = true;
     }
 }

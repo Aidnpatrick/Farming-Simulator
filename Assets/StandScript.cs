@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 using System.Collections;
 using JetBrains.Annotations;
 using NUnit.Framework;
+using System.Security.Cryptography;
 
 public struct Item
 {
@@ -227,6 +228,11 @@ public class StandScript : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
     }
 
-
-
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Bullet"))
+        {
+            Destroy(collision.gameObject);
+        }
+    }
 }

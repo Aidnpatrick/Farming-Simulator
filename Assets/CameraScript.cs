@@ -94,7 +94,8 @@ public class CameraScript : MonoBehaviour
         }
 
         isOnTile = true;
-
+        if(!canEdit)
+            return;
         if (hit.collider.gameObject.name.Contains("Tile"))
         {
             TileScript tileScript = hit.collider.gameObject.GetComponent<TileScript>();
@@ -238,7 +239,13 @@ public class CameraScript : MonoBehaviour
                     if(child.name.Contains("Dirt"))
                         audioSource.PlayOneShot(harvest1);
                     if(child.name.Contains("Weed"))
+                    {
+                        float odds = Random.Range(0, 13);
+                        if(odds < 1)
+                            invScript.coins++;
                         audioSource.PlayOneShot(WeedS);
+
+                    }
                     
                     invScript.materials++;                    
                 }
@@ -393,3 +400,4 @@ public class CameraScript : MonoBehaviour
         cursorText.GetComponent<TMP_Text>().text = verb + "" + collisionName;
     }
 }
+

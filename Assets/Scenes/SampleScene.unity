@@ -3652,7 +3652,7 @@ GameObject:
   - component: {fileID: 760932837}
   - component: {fileID: 760932836}
   m_Layer: 0
-  m_Name: Square (1)
+  m_Name: duuur
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6213,6 +6213,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerScript: {fileID: 1523223328}
+  cameraScript: {fileID: 519420033}
   gameCanvas: {fileID: 439214284}
   healthContainer: {fileID: 1170658321}
   tabContainer: {fileID: 1749094756}
@@ -6369,7 +6370,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: 0, w: -38.40328}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -6394,7 +6395,7 @@ GameObject:
   - component: {fileID: 2070166646}
   - component: {fileID: 2070166645}
   m_Layer: 0
-  m_Name: Square
+  m_Name: peepee
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

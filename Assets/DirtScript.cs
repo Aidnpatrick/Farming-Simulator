@@ -9,7 +9,7 @@ public class DirtScript : MonoBehaviour
     public string currentPlant = "";
     public float growth = 0;
     private float growthStop = 35f;
-    private int OddsOfGrowing = 10;
+    private int OddsOfGrowing = 5;
 
     private Transform plantChild;
     private SpriteRenderer spriteRenderer;
@@ -35,18 +35,19 @@ public class DirtScript : MonoBehaviour
             if (otherTile == tile) 
                 continue;
 
-            TreeScript tree = otherTile.GetComponentInChildren<TreeScript>();
-            if (tree == null) 
+            if (otherTile.transform.childCount == 0) 
+                continue;
+            if(!otherTile.transform.GetChild(0).name.Contains("Water"))
                 continue;
 
-            if(Vector3.Distance(tilePos, tree.transform.position) < 3)
+            if(Vector3.Distance(tilePos, otherTile.transform.position) < 3)
             {
-                OddsOfGrowing = 7;
+                OddsOfGrowing = 3;
                 isGoodDirt = true;
                 break;
             }
         }
-        if(!isGoodDirt) OddsOfGrowing = 10;
+        if(!isGoodDirt) OddsOfGrowing = 5;
 
     }
     
