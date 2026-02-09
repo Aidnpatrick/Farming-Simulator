@@ -42,12 +42,12 @@ public class DirtScript : MonoBehaviour
 
             if(Vector3.Distance(tilePos, otherTile.transform.position) < 3)
             {
-                OddsOfGrowing = 3;
+                OddsOfGrowing = 2;
                 isGoodDirt = true;
                 break;
             }
         }
-        if(!isGoodDirt) OddsOfGrowing = 5;
+        if(!isGoodDirt) OddsOfGrowing = 3;
 
     }
     
