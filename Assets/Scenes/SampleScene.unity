@@ -4937,7 +4937,7 @@ GameObject:
   - component: {fileID: 1523223336}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4959,6 +4959,7 @@ MonoBehaviour:
   canGrab: 0
   baseMoveSpeed: 5
   health: 10
+  healthCoolDown: 5
   startinglocation: {x: 30, y: 30, z: 1}
   audioSource: {fileID: 1523223336}
   collect: {fileID: 8300000, guid: 69aaa01e47b84bc41a923947a91f771c, type: 3}

@@ -65,8 +65,7 @@ public class EnemyScript : NPC
         }
     }
 
-
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
@@ -75,11 +74,14 @@ public class EnemyScript : NPC
                 PlayerScript ps = collision.GetComponent<PlayerScript>();
                 if (ps != null)
                 {
-                    ps.health -= 10f;
-                    attackingCooldown = 2f;
+                    ps.health -= 1f;
+                    attackingCooldown = 0.5f;
                 }
             }
         }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
 
         if (collision.CompareTag("Bullet"))
         {

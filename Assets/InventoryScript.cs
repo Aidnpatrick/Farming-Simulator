@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using TMPro;
+using System;
 
 [System.Serializable]
 public class Stock
@@ -109,6 +110,7 @@ public class InventoryScript : MonoBehaviour
 
         tabUI.SetActive(keyboard.tabKey.isPressed);
         UpdateTabUI();
+        HealthRegen();
     }
 
     public void UpdatePlayerChildren()
@@ -152,6 +154,15 @@ public class InventoryScript : MonoBehaviour
             Instantiate(heartPrefab, healthContainer.transform, false);
     }
 
+    public void HealthRegen()
+    {
+        
+        if(playerScript.health < 10 && playerScript.healthCoolDown <= 0)
+        {
+            playerScript.health = Mathf.Clamp(playerScript.health + 1, 0, 10);
+            playerScript.healthCoolDown = 5;
+        }
+    }
     public void UpdateTabUI()
     {
         foreach (Transform img in tabContainer.transform)

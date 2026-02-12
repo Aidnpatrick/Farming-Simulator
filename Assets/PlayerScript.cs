@@ -18,6 +18,7 @@ public class PlayerScript : MonoBehaviour
     private GameObject currentLootObject = null;
 
     public float health = 10;
+    public float healthCoolDown = 5;
     public Vector3 startinglocation = new Vector3(20, 30, 1);
     public AudioSource audioSource;
     public AudioClip collect;
@@ -56,6 +57,8 @@ public class PlayerScript : MonoBehaviour
             audioSource.PlayOneShot(collect);
             canGrab = false;
         }
+        
+        healthCoolDown -= Time.deltaTime;
     }
 
     void FixedUpdate()
