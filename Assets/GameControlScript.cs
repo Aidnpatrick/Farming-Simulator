@@ -10,33 +10,7 @@ public class WorldObjectData
     public string id;
     public int tileIndex;
 }
-/*
-[System.Serializable]
-public class SaveData
-{
-    public List<WorldObjectData> worldObjects = new List<WorldObjectData>();
-    public List<string> inventorySaved;
-    public List<Stock> stockSaved;
-}
-*/
-/*
-public static class SaveSystem
-{
-    static string path = Application.persistentDataPath + "/save.json";
 
-    public static void Save(SaveData data)
-    {
-        File.WriteAllText(path, JsonUtility.ToJson(data, true));
-    }
-
-    public static SaveData Load()
-    {
-        if (!File.Exists(path)) return null;
-        return JsonUtility.FromJson<SaveData>(File.ReadAllText(path));
-    }
-}
-
-*/
 
 public class GameControlScript : MonoBehaviour
 {
@@ -148,55 +122,6 @@ public class GameControlScript : MonoBehaviour
             t.transform.GetChild(0).gameObject.SetActive(!isDay);
     }
 
-/*
-    SaveData BuildSaveData()
-    {
-        SaveData data = new SaveData();
-
-        for (int i = 0; i < tiles.Length; i++)
-        {
-            if (tiles[i].transform.childCount > 0)
-            {
-                string name = tiles[i].transform.GetChild(0).name.Replace("(Clone)", "");
-                if (name.Contains("Weed")) name = "Weed";
-                if (name.Contains("Tree")) name = "Tree";
-
-                data.worldObjects.Add(new WorldObjectData
-                {
-                    id = name,
-                    tileIndex = i
-                });
-            }
-        }
-
-        data.inventorySaved = inventoryScript.inventory;
-        data.stockSaved = inventoryScript.stocks;
-        return data;
-    }
-
-
-    void LoadWorld(SaveData data)
-    {
-        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Weed"))
-            Destroy(obj);
-        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Tree"))
-            Destroy(obj);
-
-        foreach (WorldObjectData obj in data.worldObjects)
-        {
-            if (obj.tileIndex < 0 || obj.tileIndex >= tiles.Length) continue;
-
-            if (obj.id == "Weed")
-                cameraScript.Build(tiles[obj.tileIndex], weedPrefab, new Vector3(0, 0, 1), true);
-
-            if (obj.id == "Tree")
-                cameraScript.Build(tiles[obj.tileIndex], treePrefab, new Vector3(0, 1f, 1), true, treeTypes);
-        }
-
-        inventoryScript.inventory = data.inventorySaved;
-        inventoryScript.stocks = data.stockSaved;
-    }
-*/
     void SpawnWorld()
     {
         for (int i = 0; i < 30; i++)
@@ -342,4 +267,6 @@ public class GameControlScript : MonoBehaviour
 
         }
     }
+
+    
 }
